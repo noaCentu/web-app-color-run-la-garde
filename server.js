@@ -8,25 +8,26 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// --- 🔒 PARAMÈTRES DE SÉCURITÉ ---
-const MOT_DE_PASSE_MATIN = "admincenturio25"; 
-const MOT_DE_PASSE_STATS = "stat2026"; 
-const MOT_DE_PASSE_RESET = "resetparty13"; 
+// --- 🔒 PARAMÈTRES DE SÉCURITÉ MODIFIÉS ---
+const MOT_DE_PASSE_MATIN = "admin";  // Accès SCAN uniquement
+const MOT_DE_PASSE_STATS = "admin+"; // Accès SCAN + STATS + TIRAGE
 const ADMIN_TOKEN = "jeton_secret_incassable_2024_xyz"; 
 const STATS_TOKEN = "jeton_secret_stats_2026_abc"; 
 
-// 🚨 MODIFICATION ICI : centurioDB est devenu colorRunDB pour isoler les stats !
 const MONGO_URI = "mongodb+srv://CenturioAdmin:CenturioAdmin@cluster0.xdadatq.mongodb.net/colorRunDB?retryWrites=true&w=majority";
 
 function getTodayDate() {
     return new Date().toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' });
 }
 
+// 🚨 AJOUT DES NOMS ET PRÉNOMS ICI
 const PlayerSchema = new mongoose.Schema({
     userId: String,
     games: [String],
     visitedDays: { type: [String], default: [] },
-    surveyDone: { type: Boolean, default: false }
+    surveyDone: { type: Boolean, default: false },
+    nom: { type: String, default: "" },
+    prenom: { type: String, default: "" }
 });
 const Player = mongoose.model('Player', PlayerSchema);
 
@@ -35,7 +36,6 @@ const StatsSchema = new mongoose.Schema({
     totalVisiteurs: { type: Number, default: 0 },
     maxConcurrentUsers: { type: Number, default: 0 }, 
     totalGagnants: { type: Number, default: 0 },
-    totalAdmins: { type: Number, default: 0 },
     gameStats: { type: Map, of: Number, default: {} },
     surveyRespondents: { type: Number, default: 0 },
     surveyScores: {
@@ -72,10 +72,6 @@ function normalizeComment(text) {
     if (!text) return null;
     let t = text.toLowerCase().trim();
     if (t.length < 2) return null;
-    if (t.includes('design') || t.includes('interface')) return "Améliorer l'interface";
-    if (t.includes('bug') || t.includes('lent')) return "Améliorer la fluidité";
-    if (t.includes('jeu') || t.includes('défi')) return "Ajouter plus de jeux";
-    if (t.includes('cadeau') || t.includes('lot')) return "De meilleurs cadeaux";
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
@@ -115,17 +111,8 @@ io.on('connection', async (socket) => {
 app.post('/api/login', async (req, res) => {
     const { password } = req.body;
     if (password === MOT_DE_PASSE_MATIN) res.json({ success: true, token: ADMIN_TOKEN, role: 'admin' });
-    else if (password === MOT_DE_PASSE_STATS) res.json({ success: true, token: STATS_TOKEN, role: 'stats' });
+    else if (password === MOT_DE_PASSE_STATS) res.json({ success: true, token: STATS_TOKEN, role: 'admin+' });
     else res.json({ success: false });
-});
-
-app.post('/api/verify_reset', (req, res) => {
-    const { password } = req.body;
-    if (password === MOT_DE_PASSE_RESET) {
-        res.json({ success: true });
-    } else {
-        res.json({ success: false });
-    }
 });
 
 // --- 🎮 ROUTES DE JEU ET VALIDATION ---
@@ -142,7 +129,7 @@ app.get('/api/my-progress/:userId', async (req, res) => {
 
 app.post('/api/validate', async (req, res) => {
     const { userId, gameId, token } = req.body;
-    if (token !== ADMIN_TOKEN) return res.json({ success: false, message: "🚨 FRAUDE !" });
+    if (token !== ADMIN_TOKEN && token !== STATS_TOKEN) return res.json({ success: false, message: "🚨 FRAUDE !" });
     
     try {
         let player = await Player.findOne({ userId: userId });
@@ -154,8 +141,6 @@ app.post('/api/validate', async (req, res) => {
         }
 
         if (player.games.includes(gameId)) return res.json({ success: false, message: "⚠️ DÉJÀ validé !" });
-        
-        // 🚨 MODIFICATION ICI : Limite adaptée à 5 jeux (au lieu de 8)
         if (player.games.length >= 5) return res.json({ success: false, message: "🛑 Maximum de défis atteint !" });
 
         player.games.push(gameId);
@@ -169,7 +154,6 @@ app.post('/api/validate', async (req, res) => {
             await stats.save();
         }
 
-        // 🚨 MODIFICATION ICI : On valide un "gagnant" quand il atteint 5 jeux
         if (player.games.length === 5) await GlobalStat.updateOne({ idName: "main" }, { $inc: { totalGagnants: 1 } });
         
         io.to(userId).emit('challenge_validated', gameId);
@@ -177,14 +161,19 @@ app.post('/api/validate', async (req, res) => {
     } catch(e) { res.json({ success: false, message: "Erreur serveur" }); }
 });
 
-// --- 📝 ROUTES QUESTIONNAIRES ---
+// --- 📝 ROUTES QUESTIONNAIRES ET NOMS ---
 app.post('/api/survey', async (req, res) => {
-    const { q1, q2, q3, comment, userId } = req.body;
-    if(!q1 || !q2 || !q3) return res.json({ success: false });
+    const { q1, q2, q3, comment, userId, nom, prenom } = req.body;
+    if(!q1 || !q2 || !q3 || !nom || !prenom) return res.json({ success: false });
 
     try {
         let player = await Player.findOne({ userId: userId });
-        if (player) { player.surveyDone = true; await player.save(); }
+        if (player) { 
+            player.surveyDone = true; 
+            player.nom = nom;
+            player.prenom = prenom;
+            await player.save(); 
+        }
 
         const today = getTodayDate();
         for (let k of ["main", today]) {
@@ -203,10 +192,10 @@ app.post('/api/survey', async (req, res) => {
 });
 
 app.post('/api/admin_survey', async (req, res) => {
+    // Identique à avant
     const { q1, q2, q3, comment, token } = req.body;
-    if(token !== ADMIN_TOKEN) return res.json({ success: false });
+    if(token !== ADMIN_TOKEN && token !== STATS_TOKEN) return res.json({ success: false });
     if(!q1 || !q2) return res.json({ success: false }); 
-    
     try {
         const today = getTodayDate();
         for (let k of ["main", today]) {
@@ -225,7 +214,29 @@ app.post('/api/admin_survey', async (req, res) => {
     } catch(e) { res.json({ success: false }); }
 });
 
-// --- 📊 ROUTES STATISTIQUES ---
+// --- 🎰 ROUTE TIRAGE AU SORT ---
+app.post('/api/tirage', async (req, res) => {
+    if (req.body.token !== STATS_TOKEN) return res.json({ success: false, message: "Non autorisé" });
+    try {
+        // On récupère uniquement ceux qui ont fini le questionnaire (donc inscrit)
+        const participants = await Player.find({ surveyDone: true });
+        if (participants.length === 0) return res.json({ success: false, message: "Aucun participant inscrit pour l'instant." });
+        
+        // On tire au sort
+        const winnerIndex = Math.floor(Math.random() * participants.length);
+        const winner = participants[winnerIndex];
+        
+        // On renvoie toute une liste de faux noms pour l'animation + le VRAI gagnant à la fin
+        const fauxNoms = participants.map(p => `${p.prenom} ${p.nom.charAt(0).toUpperCase()}.`).sort(() => 0.5 - Math.random()).slice(0, 20);
+        
+        res.json({ 
+            success: true, 
+            winner: { prenom: winner.prenom, nom: winner.nom },
+            fauxNoms: fauxNoms
+        });
+    } catch(e) { res.json({ success: false, message: "Erreur serveur" }); }
+});
+
 app.post('/api/stats_data', async (req, res) => {
     if (req.body.token === STATS_TOKEN) {
         try {
@@ -252,8 +263,6 @@ app.post('/api/reset_stats', async (req, res) => {
         } catch(e) { res.json({ success: false }); }
     } else res.json({ success: false });
 });
-
-app.post('/api/finish', (req, res) => { res.json({ success: true }); });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => { console.log("🚀 Serveur Centurio démarré sur le port " + PORT); });
