@@ -1,32 +1,22 @@
-console.log("🚀 Script Color Run Night v69 - Tirage au sort");
+console.log("🚀 Script Color Run Night v70 - Inscription avec Nom/Prenom");
 
-// 1. Enregistrement du Service Worker pour le mode PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error', err));
     });
 }
 
-// 💥 ANIMATION POUDRE COLORÉE (STYLE HOLI)
 function firePowder() {
     if (typeof confetti !== 'undefined') {
         const fluoColors = ['#FF007F', '#39FF14', '#00FFFF', '#FFFF00', '#FF00FF'];
         confetti({
-            particleCount: 400,       // Plus dense pour l'effet poudre
-            startVelocity: 45,        
-            spread: 360,              
-            ticks: 100,               
-            gravity: 0.6,             
-            scalar: 0.6,              
-            shapes: ['circle'],       // Uniquement des ronds (poussière)
-            colors: fluoColors,
-            origin: { x: 0.5, y: 0.4 },
-            disableForReducedMotion: true
+            particleCount: 400, startVelocity: 45, spread: 360, ticks: 100,
+            gravity: 0.6, scalar: 0.6, shapes: ['circle'], colors: fluoColors,
+            origin: { x: 0.5, y: 0.4 }, disableForReducedMotion: true
         });
     }
 }
 
-// 🎮 LISTE DES 5 JEUX COLOR RUN (SANS LE CADEAU)
 const games = [
     { id: 's1', name: 'Beat Saber (VR)', desc: 'Tranchez les cubes fluos en rythme !' },
     { id: 's2', name: 'Mur Interactif', desc: 'Explosez les cibles lumineuses !' },
@@ -40,14 +30,13 @@ let userId = localStorage.getItem('centurioUserId');
 let socket = null;
 let clockInterval = null; 
 
-// --- LOGIQUE DE SYNCHRONISATION ---
 window.forceSync = function() {
     const btn = document.getElementById('sync-btn');
     if(btn) { btn.innerText = "⏳ Synchronisation..."; btn.style.opacity = "0.5"; }
     syncWithServer();
     setTimeout(() => {
         if(btn) { btn.innerText = "✅ À jour !"; btn.style.opacity = "1";
-            setTimeout(() => { btn.innerText = "🔄 Actualiser ma page"; }, 2000);
+            setTimeout(() => { btn.innerText = "🔄 Actualiser"; }, 2000);
         }
     }, 800);
 };
@@ -68,7 +57,6 @@ window.syncWithServer = function() {
         }).catch(() => {});
 };
 
-// --- GESTION DES WEBSOCKETS ---
 try {
     if (typeof io !== 'undefined') {
         socket = io();
@@ -77,24 +65,16 @@ try {
             let progress = JSON.parse(localStorage.getItem('centurioProgress')) || {};
             progress[gameId] = true;
             localStorage.setItem('centurioProgress', JSON.stringify(progress));
-            
-            const now = new Date();
-            const formattedTime = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h');
-            localStorage.setItem('centurioLastValidationTime', `Défi validé à ${formattedTime}`);
-
             if (typeof closeModal === 'function') closeModal();
             if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-            
-            firePowder(); // Lancement de la poudre !
-
+            firePowder();
             const sModal = document.getElementById('success-modal');
-            if(sModal) { sModal.style.display = 'flex'; setTimeout(() => sModal.style.display = 'none', 3000); }
+            if(sModal) { sModal.style.display = 'flex'; setTimeout(() => sModal.style.display = 'none', 2500); }
             if (document.getElementById('games-list')) renderGames();
         });
     }
 } catch(e) {}
 
-// --- INITIALISATION IDENTITÉ ---
 try {
     if (typeof FingerprintJS !== 'undefined') {
         FingerprintJS.load().then(fp => {
@@ -108,57 +88,48 @@ try {
     } else { syncWithServer(); }
 } catch(e) { syncWithServer(); }
 
-// --- AFFICHAGE DES JEUX ---
 window.renderGames = function() {
     const list = document.getElementById('games-list');
+    const drawContainer = document.getElementById('draw-confirmation-container');
     if (!list) return; 
     list.innerHTML = '';
     
     let progress = JSON.parse(localStorage.getItem('centurioProgress')) || {};
     let count = 0;
     const surveyDone = localStorage.getItem('centurioSurveyDone') === 'true';
-    const drawContainer = document.getElementById('draw-confirmation-container');
 
-    // Rendu des 5 jeux standards
     games.forEach(game => {
         const isDone = progress[game.id] === true;
         if (isDone) count++;
         const card = document.createElement('div');
         card.className = `game-card ${isDone ? 'done' : ''}`;
-        
         let actionHtml = isDone ? `<span style="color:var(--success); font-weight:bold;">OK ✅</span>` : `<button class="btn-group-select" onclick="openModal('${game.id}')">SCAN</button>`;
         card.innerHTML = `<div class="game-card-content"><h3>${game.name}</h3><p>${game.desc}</p></div><div class="game-card-action">${actionHtml}</div>`;
         list.appendChild(card);
     });
 
-    // Bloc Questionnaire
     if (!surveyDone) {
         const sCard = document.createElement('div');
         sCard.className = 'game-card';
         sCard.style.borderLeft = '4px dashed var(--uv-blue)';
-        
-        if (count === 5) {
-             sCard.innerHTML = `<div class="game-card-content"><h3>📝 Questionnaire</h3><p>Obligatoire pour l'inscription.</p></div><div class="game-card-action"><button class="btn-group-select" style="background:var(--uv-blue); color:#000;" onclick="openSurvey()">RÉPONDRE</button></div>`;
-        } else {
-            sCard.innerHTML = `<div class="game-card-content"><h3 style="color: var(--text-muted);">📝 Questionnaire</h3><p style="color: var(--text-muted);">Validez les 5 défis d'abord.</p></div><div class="game-card-action"><button class="btn-group-select" style="background:var(--text-muted); color:#000;" onclick="alert('Validez d\\'abord tous les stands !')">🔒</button></div>`;
-        }
+        let canOpen = (count === 5);
+        let btnColor = canOpen ? `var(--uv-blue)` : `#333`;
+        sCard.innerHTML = `<div class="game-card-content"><h3>📝 Inscription Tirage</h3><p>${canOpen ? 'Débloqué ! Cliquez pour vous inscrire.' : 'Finissez les 5 défis pour participer.'}</p></div><div class="game-card-action"><button class="btn-group-select" style="background:${btnColor}; color:#000;" onclick="${canOpen ? 'openSurvey()' : 'alert(\'Finissez les 5 animations d\\\'abord !\')'}">${canOpen ? 'OUVRIR' : '🔒'}</button></div>`;
         list.appendChild(sCard);
         if(drawContainer) drawContainer.innerHTML = '';
-    } else if (count === 5 && surveyDone) {
-        // Inscription confirmée !
-        if(drawContainer) drawContainer.innerHTML = `<div class="draw-confirmation">INSCRIPTION CONFIRMÉE ✅</div>`;
+    } else {
+        // 🚨 NOUVEAU : Message vert personnalisé !
+        const userName = localStorage.getItem('centurioUserPrenom') || "Joueur";
+        if(count === 5 && drawContainer) {
+            drawContainer.innerHTML = `<div class="draw-confirmation">${userName}, ton inscription est confirmée ✅</div>`;
+        }
     }
 
     updateChart(count);
-    const tInfo = document.getElementById('last-validation-info');
-    const sTime = localStorage.getItem('centurioLastValidationTime');
-    if (tInfo && sTime && count > 0) { tInfo.innerText = sTime; tInfo.style.display = 'block'; }
 };
 
-// --- JAUGE DE PROGRESSION (BASE 5 JEUX) ---
 window.updateChart = function(count) {
-    const totalStandards = 5; 
-    const pcent = Math.round((count / totalStandards) * 100);
+    const pcent = Math.round((count / 5) * 100);
     if(document.getElementById('chart-text')) document.getElementById('chart-text').innerText = `${pcent}%`;
     const canv = document.getElementById('progress-chart');
     if (canv) {
@@ -173,7 +144,6 @@ window.updateChart = function(count) {
     }
 };
 
-// --- MODALES ET QR ---
 window.openModal = function(gameId) {
     document.getElementById('animator-modal').style.display = 'flex';
     const clockElement = document.getElementById('live-clock');
@@ -197,7 +167,6 @@ window.closeModal = function() {
 
 window.openSurvey = function() { document.getElementById('survey-modal').style.display = 'flex'; };
 
-// --- QUESTIONNAIRE ---
 window.answers = { q1: null, q2: null, q3: null };
 window.selectOpt = function(q, v) {
     window.answers[q] = v;
@@ -207,18 +176,27 @@ window.selectOpt = function(q, v) {
 };
 
 window.submitSurvey = function() {
-    if(!window.answers.q1 || !window.answers.q2 || !window.answers.q3) return alert("Notez les 3 questions !");
+    const errorMsg = document.getElementById('survey-error');
+    const nom = document.getElementById('survey-nom').value.trim();
+    const prenom = document.getElementById('survey-prenom').value.trim();
+
+    if(!nom || !prenom) { errorMsg.innerText = "Veuillez saisir votre Nom et Prénom."; errorMsg.style.display = 'block'; return; }
+    if(!window.answers.q1 || !window.answers.q2 || !window.answers.q3) { errorMsg.innerText = "Veuillez noter les 3 questions."; errorMsg.style.display = 'block'; return; }
+    
+    errorMsg.style.display = 'none';
+    const comm = document.getElementById('survey-comment').value;
+
     fetch('/api/survey', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q1: window.answers.q1, q2: window.answers.q2, q3: window.answers.q3, comment: document.getElementById('survey-comment').value, userId: userId })
+        body: JSON.stringify({ q1: window.answers.q1, q2: window.answers.q2, q3: window.answers.q3, comment: comm, userId: userId, nom: nom, prenom: prenom })
     }).then(() => {
         localStorage.setItem('centurioSurveyDone', 'true');
+        localStorage.setItem('centurioUserPrenom', prenom); // On sauvegarde le prénom pour l'afficher en bas !
+
         document.getElementById('survey-modal').style.display = 'none';
-        
-        // DÉCLENCHEMENT DE L'ANIMATION POUDRE 🎨
         firePowder();
         
-        // AFFICHAGE DU POP-UP DE VALIDATION DU TIRAGE AU SORT
+        document.getElementById('winner-name-display').innerText = prenom;
         if(document.getElementById('final-modal')) document.getElementById('final-modal').style.display = 'flex';
         
         renderGames();
