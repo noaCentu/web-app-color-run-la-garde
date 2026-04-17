@@ -5,40 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tirage au Sort - Color Run</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=71">
+    <link rel="stylesheet" href="style.css?v=72">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .slot-machine {
-            background: rgba(0, 0, 0, 0.8); border: 4px solid var(--brand);
-            border-radius: 20px; padding: 40px; width: 90%; max-width: 800px;
-            text-align: center; box-shadow: 0 0 50px var(--brand); z-index: 10;
-        }
-        .name-display {
-            font-size: 50px; font-weight: 900; color: var(--success);
-            text-transform: uppercase; height: 80px; overflow: hidden;
-            text-shadow: 0 0 20px var(--success); margin: 30px 0;
-            display: flex; align-items: center; justify-content: center;
-        }
+        body { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; background-color: var(--bg-night); }
+        
+        /* Bouton de lancement */
         .btn-lancer {
-            background: var(--uv-blue); color: black; font-size: 24px;
-            padding: 20px 50px; border-radius: 50px; border: none;
+            background: var(--brand); color: white; font-size: 28px;
+            padding: 25px 60px; border-radius: 50px; border: none;
             font-weight: 900; cursor: pointer; text-transform: uppercase;
-            box-shadow: 0 0 25px var(--uv-blue); transition: 0.3s; margin-top: 20px;
+            box-shadow: 0 0 30px var(--brand); transition: 0.3s; z-index: 100;
+            animation: pulse-btn 2s infinite;
         }
-        .btn-lancer:hover { transform: scale(1.1); box-shadow: 0 0 50px var(--uv-blue); }
-        .btn-lancer:active { transform: scale(0.9); }
+        .btn-lancer:hover { transform: scale(1.1); box-shadow: 0 0 60px var(--brand); }
+        @keyframes pulse-btn { 0% { box-shadow: 0 0 15px var(--brand); } 50% { box-shadow: 0 0 40px var(--brand); } 100% { box-shadow: 0 0 15px var(--brand); } }
+
+        /* Scène de course (cachée au début) */
+        #race-scene {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            background: radial-gradient(circle, #1a0033 0%, #0a001a 100%);
+            z-index: 50; overflow: hidden;
+        }
+        
+        /* Le coureur qui fonce vers l'écran */
+        .runner-container {
+            display: flex; flex-direction: column; align-items: center;
+            transform: scale(0.1); opacity: 0;
+        }
+        .runner-container.sprinting {
+            animation: sprintTowards 3.5s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+        }
+        @keyframes sprintTowards {
+            0% { transform: scale(0.1) translateY(100px); opacity: 0; filter: blur(5px); }
+            20% { opacity: 1; filter: blur(0px); }
+            95% { opacity: 1; }
+            100% { transform: scale(8) translateY(20px); opacity: 0; filter: blur(10px); } /* Le coureur traverse la caméra */
+        }
+        .runner-emoji { font-size: 150px; text-shadow: 0 0 50px var(--uv-blue); }
+        .flashing-name { font-size: 30px; font-weight: 900; color: white; text-transform: uppercase; text-shadow: 0 0 20px var(--brand); margin-bottom: 20px; background: rgba(0,0,0,0.5); padding: 5px 20px; border-radius: 10px; border: 2px solid var(--brand); }
+
+        /* Lignes de vitesse fluo */
+        .speed-lines { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+        .line { position: absolute; width: 2px; height: 100px; background: var(--brand); box-shadow: 0 0 10px var(--brand); opacity: 0; }
+        .line.active { animation: flyBy 0.5s linear infinite; }
+        @keyframes flyBy { 0% { transform: translateY(-50vh) scaleY(1); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(150vh) scaleY(3); opacity: 0; } }
+
+        /* Le Dossard Gagnant (caché au début) */
+        #dossard-scene {
+            position: absolute; z-index: 200; display: none; flex-direction: column; align-items: center;
+        }
+        .dossard {
+            background: #ffffff; width: 90vw; max-width: 500px;
+            border-radius: 15px; padding: 30px 20px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px var(--success), inset 0 0 30px rgba(0,0,0,0.1);
+            position: relative; color: black;
+            transform: scale(0) rotate(-15deg);
+            animation: popDossard 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popDossard { to { transform: scale(1) rotate(0deg); } }
+        
+        /* Les épingles à nourrice du dossard */
+        .pin { width: 14px; height: 14px; background: #silver; border-radius: 50%; position: absolute; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.5), 2px 2px 5px rgba(0,0,0,0.3); border: 2px solid #999; }
+        .pin.tl { top: 15px; left: 15px; } .pin.tr { top: 15px; right: 15px; }
+        .pin.bl { bottom: 15px; left: 15px; } .pin.br { bottom: 15px; right: 15px; }
+
+        .dossard-header { background: var(--brand); color: white; padding: 10px; font-weight: 900; font-size: 24px; border-radius: 8px; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
+        .dossard-subtitle { font-size: 14px; font-weight: 800; color: #555; text-transform: uppercase; }
+        .dossard-num { font-size: 90px; font-weight: 900; line-height: 1; margin: 10px 0; font-family: monospace; color: #222; }
+        .dossard-name { font-size: 45px; font-weight: 900; color: var(--success); text-transform: uppercase; line-height: 1.1; text-shadow: 1px 1px 0px #000; margin-top: 10px; }
+
     </style>
 </head>
 <body>
     <div class="fullscreen-bg"></div>
 
-    <div class="header-v2" style="position: absolute; top:0; width:100%;">
+    <div class="header-v2" style="position: absolute; top:0; width:100%; z-index: 1000;">
         <div style="width:30px;"></div>
         <div class="header-title neon-text">TIRAGE AU SORT 🎰</div>
         <div class="hamburger-btn" id="admin-menu-btn" onclick="toggleMenu()" style="display:none; font-size:25px; cursor:pointer;">☰</div>
     </div>
-
     <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
     <div class="side-menu" id="side-menu">
         <button class="close-menu" onclick="toggleMenu()">×</button>
@@ -50,17 +97,33 @@
         </div>
     </div>
 
-    <div class="slot-machine">
-        <h2 style="color: white; font-size: 30px;">LE GRAND GAGNANT EST...</h2>
-        <div class="name-display" id="name-box">???</div>
-        <button class="btn-lancer" id="btn-action" onclick="lancerTirage()">LANCER LA ROULETTE !</button>
+    <button class="btn-lancer" id="btn-action" onclick="lancerCourse()">🏁 LANCER LA COURSE !</button>
+    <p id="empty-msg" style="color: #ff4d4d; font-weight: bold; font-size: 20px; display: none; text-shadow: 0 0 10px red;">🚨 Aucun participant inscrit !</p>
+
+    <div id="race-scene">
+        <div class="speed-lines" id="speed-lines"></div>
+        <div class="runner-container" id="runner-sprite">
+            <div class="flashing-name" id="runner-name">GÉNÉRATION...</div>
+            <div class="runner-emoji">🏃‍♂️💨</div>
+        </div>
+    </div>
+
+    <div id="dossard-scene">
+        <h2 class="neon-text" style="font-size: 40px; margin-bottom: 20px; color: white;">LE GAGNANT EST...</h2>
+        <div class="dossard">
+            <div class="pin tl"></div><div class="pin tr"></div><div class="pin bl"></div><div class="pin br"></div>
+            <div class="dossard-header">Color Run 2026</div>
+            <div class="dossard-subtitle">Dossard Officiel</div>
+            <div class="dossard-num" id="winner-num">0000</div>
+            <div style="width: 100%; height: 8px; background: repeating-linear-gradient(90deg, #000, #000 10px, #fff 10px, #fff 20px); margin: 15px 0;"></div> <div class="dossard-name" id="winner-name">NOM GAGNANT</div>
+        </div>
+        <button class="btn-group-select" style="margin-top: 40px; width: 300px; padding: 15px; font-size: 18px;" onclick="window.location.reload()">🔄 NOUVEAU TIRAGE</button>
     </div>
 
     <script>
+        // Vérif Sécurité
         const token = sessionStorage.getItem('centurioStatsToken');
         if (!token) window.location.href = "index.html";
-
-        // Affichage du menu si Admin+
         if (sessionStorage.getItem('centurioAdminRole') === 'admin+') {
             document.getElementById('admin-menu-btn').style.display = 'block';
         }
@@ -68,41 +131,72 @@
         function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('menu-overlay').classList.toggle('open'); }
         function logout() { sessionStorage.clear(); window.location.href = "index.html"; }
 
-        function lancerTirage() {
-            const btn = document.getElementById('btn-action');
-            const nameBox = document.getElementById('name-box');
-            
-            btn.style.display = 'none';
-            nameBox.style.color = "white";
-            nameBox.style.textShadow = "none";
+        // Génère des lignes de vitesse en JS pour l'effet Warp Speed
+        const linesContainer = document.getElementById('speed-lines');
+        for(let i=0; i<30; i++) {
+            let line = document.createElement('div');
+            line.className = 'line';
+            line.style.left = Math.random() * 100 + 'vw';
+            line.style.animationDelay = (Math.random() * 0.5) + 's';
+            let color = ['var(--brand)', 'var(--success)', 'var(--uv-blue)', '#FFFF00'][Math.floor(Math.random()*4)];
+            line.style.background = color;
+            line.style.boxShadow = `0 0 15px ${color}`;
+            linesContainer.appendChild(line);
+        }
 
+        function lancerCourse() {
+            const btn = document.getElementById('btn-action');
+            const emptyMsg = document.getElementById('empty-msg');
+            
+            // On demande le gagnant au serveur
             fetch('/api/tirage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token }) })
             .then(res => res.json())
             .then(data => {
                 if (!data.success) {
-                    nameBox.innerText = "AUCUN INSCRIT";
-                    btn.style.display = 'inline-block';
+                    btn.style.display = 'none';
+                    emptyMsg.style.display = 'block';
+                    setTimeout(() => window.location.reload(), 3000);
                     return;
                 }
 
-                let i = 0;
-                let interval = setInterval(() => {
-                    nameBox.innerText = data.fauxNoms[i % data.fauxNoms.length];
-                    i++;
-                }, 100);
+                // 1. Cacher le bouton et lancer la course !
+                btn.style.display = 'none';
+                document.getElementById('race-scene').style.display = 'flex';
+                
+                // Activer les lignes de vitesse
+                document.querySelectorAll('.line').forEach(l => l.classList.add('active'));
 
+                // Faire défiler les noms très vite
+                let i = 0;
+                let flashInterval = setInterval(() => {
+                    document.getElementById('runner-name').innerText = data.fauxNoms[i % data.fauxNoms.length];
+                    i++;
+                }, 80);
+
+                // Lancer l'animation du coureur qui sprinte vers l'écran
+                const runner = document.getElementById('runner-sprite');
+                runner.classList.add('sprinting');
+
+                // 2. Fin de la course : BAM ! Explosion et Dossard
                 setTimeout(() => {
-                    clearInterval(interval);
-                    nameBox.innerText = `${data.winner.prenom} ${data.winner.nom}`;
-                    nameBox.style.color = "var(--success)";
-                    nameBox.style.textShadow = "0 0 30px var(--success)";
+                    clearInterval(flashInterval);
+                    document.getElementById('race-scene').style.display = 'none';
                     
+                    // Explosion massive de poudre Color Run (1er plan)
                     const fluoColors = ['#FF007F', '#39FF14', '#00FFFF', '#FFFF00', '#FF00FF'];
-                    confetti({ particleCount: 600, spread: 360, startVelocity: 60, colors: fluoColors, zIndex: 1000 });
+                    confetti({ particleCount: 1000, spread: 360, startVelocity: 80, scalar: 1.2, colors: fluoColors, zIndex: 9999 });
+                    setTimeout(() => confetti({ particleCount: 500, spread: 360, startVelocity: 60, colors: fluoColors, zIndex: 9999 }), 500);
+
+                    // Affichage de la scène du Dossard
+                    document.getElementById('dossard-scene').style.display = 'flex';
                     
-                    btn.innerText = "REFAIRE UN TIRAGE";
-                    btn.style.display = 'inline-block';
-                }, 4000);
+                    // Remplissage du dossard avec le vrai gagnant
+                    document.getElementById('winner-name').innerText = `${data.winner.prenom} ${data.winner.nom}`;
+                    
+                    // On génère un beau numéro de dossard aléatoire (#2048, #9102...)
+                    document.getElementById('winner-num').innerText = Math.floor(1000 + Math.random() * 9000);
+
+                }, 3500); // Le sprint dure exactement 3.5 secondes
             });
         }
     </script>
