@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tirage au Sort - Color Run</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=70">
+    <link rel="stylesheet" href="style.css?v=60">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
@@ -18,12 +18,13 @@
             font-size: 50px; font-weight: 900; color: var(--success);
             text-transform: uppercase; height: 80px; overflow: hidden;
             text-shadow: 0 0 20px var(--success); margin: 30px 0;
+            display: flex; align-items: center; justify-content: center;
         }
         .btn-lancer {
             background: var(--uv-blue); color: black; font-size: 24px;
             padding: 20px 50px; border-radius: 50px; border: none;
             font-weight: 900; cursor: pointer; text-transform: uppercase;
-            box-shadow: 0 0 25px var(--uv-blue); transition: 0.3s;
+            box-shadow: 0 0 25px var(--uv-blue); transition: 0.3s; margin-top: 20px;
         }
         .btn-lancer:hover { transform: scale(1.1); box-shadow: 0 0 50px var(--uv-blue); }
         .btn-lancer:active { transform: scale(0.9); }
@@ -32,8 +33,9 @@
 <body>
     <div class="fullscreen-bg"></div>
     <div class="header-v2" style="position: absolute; top:0; width:100%;">
+        <div class="hamburger-btn" onclick="window.location.href='scan.html'" style="font-size:18px; text-decoration:none; color:white !important;">⬅ Retour</div>
         <div class="header-title neon-text">TIRAGE AU SORT 🎰</div>
-        <div class="hamburger-btn" onclick="window.location.href='scan.html'" style="font-size:20px; text-decoration:none;">⬅ Retour</div>
+        <div style="width: 70px;"></div>
     </div>
 
     <div class="slot-machine">
