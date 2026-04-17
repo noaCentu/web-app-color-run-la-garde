@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Règlement - Espace Gaming Color Run</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=65">
+</head>
+<body>
+    <div id="google_translate_element" style="display:none;"></div>
+    <script>function googleTranslateElementInit() { new google.translate.TranslateElement({pageLanguage: 'fr', autoDisplay: false}, 'google_translate_element'); }</script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <div class="fullscreen-bg"></div>
+
+    <div class="header-v2">
+        <div class="lang-btn" style="opacity: 0;">🎮</div>
+        <div class="header-title"><span class="notranslate">Espace Gaming</span><br><span style="font-size: 14px; color: white;">Color Run La Garde</span></div>
+        <div class="hamburger-btn" onclick="toggleMenu()">☰</div>
+    </div>
+
+    <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <button class="close-menu" onclick="toggleMenu()">×</button>
+        <a href="index.html">🏠 Accueil</a>
+        <a href="defis.html">🎮 Défis Gaming</a>
+        <a href="contact.html">✉️ Contact</a>
+        <a href="reglement.html" style="color: var(--brand) !important;">📜 Règles</a>
+        <div style="margin-top: auto; margin-bottom: 20px;">
+            <a href="index.html?admin=open" style="border-top: 1px solid var(--glass-border); border-bottom: none; font-size: 14px; margin-top: 20px;">🔒 Espace Staff</a>
+        </div>
+    </div>
+
+    <div class="page-content fade-in">
+        <h2 style="text-align: center; margin-bottom: 30px;">Les Règles du Jeu</h2>
+        
+        <div class="rule-box">
+            <h3 style="color: var(--brand);"><span>1️⃣</span> Attention à la poudre ! 🧼</h3>
+            <p>On sait que vous êtes colorés de la tête aux pieds, mais nos manettes préfèrent rester propres ! <strong>Merci de vous nettoyer/essuyer les mains</strong> avant de manipuler les casques VR, les bornes ou le mur interactif. Des lingettes sont à votre disposition sur les stands.</p>
+        </div>
+
+        <div class="rule-box">
+            <h3 style="color: var(--brand);"><span>2️⃣</span> Jouez Fair-Play 🤝</h3>
+            <p>L'Espace Gaming est la zone "chill" de votre course ! Gardez votre esprit sportif, respectez le matériel fragile et soyez sympas avec les bénévoles qui animent les stands.</p>
+        </div>
+
+        <div class="rule-box">
+            <h3 style="color: var(--brand);"><span>3️⃣</span> Validation des QR Codes 📲</h3>
+            <p>Pour chaque défi réussi, montrez votre QR Code à l'animateur du stand. La validation est immédiate (avec une petite explosion de poudre virtuelle sur l'écran 🎨) et fait grimper votre jauge !</p>
+        </div>
+
+        <div class="rule-box">
+            <h3 style="color: var(--brand);"><span>4️⃣</span> Cadeau Finisher 🎁</h3>
+            <p>Le cadeau exclusif <span class="notranslate" style="color: var(--brand); font-weight: bold;">Centurio</span> ne vous sera remis qu'une fois les <strong>5 stands validés</strong> ET le petit questionnaire final rempli. (Attention, c'est limité à un cadeau par groupe ou par famille).</p>
+        </div>
+    </div>
+
+    <script src="script.js?v=65"></script>
+    <script>
+        function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('menu-overlay').classList.toggle('open'); }
+    </script>
+</body>
+</html>

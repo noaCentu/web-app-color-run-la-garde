@@ -1,0 +1,17 @@
+{
+  "name": "centurio-gaming-zone",
+  "version": "1.0.0",
+  "description": "Application web pour la Gaming Zone Centurio",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0",
+    "socket.io": "^4.7.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

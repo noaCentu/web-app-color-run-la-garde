@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Centurio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--secondary); margin: 0;}
+        .admin-box { background: white; padding: 40px 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+        .admin-box h2 { color: var(--brand); margin-bottom: 20px; text-transform: uppercase;}
+        .game-highlight { font-size: 24px; color: var(--secondary); font-weight: 800; margin: 15px 0; padding: 10px; border: 3px dashed var(--brand); border-radius: 10px;}
+        .btn-valider-gros { width: 100%; background: var(--success); color: white; padding: 20px; border: none; border-radius: 10px; font-weight: 800; font-size: 20px; cursor: pointer; margin-top: 10px; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);}
+    </style>
+</head>
+<body>
+    <div class="admin-box">
+        <h2>Validation Centurio</h2>
+        <p>Vous êtes sur le point de valider le défi :</p>
+        <div class="game-highlight" id="game-name">...</div>
+        
+        <button class="btn-valider-gros" onclick="validate()">DÉBLOQUER SUR LE TÉLÉPHONE DU JOUEUR</button>
+        <p id="msg" style="margin-top: 20px; font-weight: bold; font-size: 18px;"></p>
+    </div>
+
+    <script>
+        // 1. SÉCURITÉ : Vérification du badge invisible
+        const token = localStorage.getItem('centurioAdminToken');
+        if (!token) {
+            alert("🚨 ACCÈS REFUSÉ : Votre téléphone n'est pas certifié comme animateur !");
+            window.location.href = "index.html"; // On le renvoie à l'accueil
+        }
+
+        // 2. Récupération des infos dans l'URL du QR Code
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user');
+        const gameId = urlParams.get('game');
+        
+        // Dictionnaire pour afficher un beau nom
+        const gameNames = { 'mk':'Mario Kart', 'mp':'Mario Party', 'ss':'Switch Sports', 'tk':'Tekken', 'jd':'Just Dance', 'tm':'Trackmania', 'fg':'Fall Guys' };
+        document.getElementById('game-name').innerText = gameNames[gameId] || gameId.toUpperCase();
+
+        // 3. Envoi de l'ordre au serveur avec le badge secret
+        function validate() {
+            fetch('/api/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userId, gameId: gameId, token: token })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('msg').innerText = "✅ Défi validé !";
+                    document.getElementById('msg').style.color = "green";
+                } else {
+                    document.getElementById('msg').innerText = "❌ " + data.message;
+                    document.getElementById('msg').style.color = "red";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+/* --- PALETTE NOCTURNE COLOR RUN --- */
+:root {
+    --brand: #FF007F;      /* Rose Fluo */
+    --success: #39FF14;    /* Vert Fluo */
+    --uv-blue: #00FFFF;    /* Cyan Néon */
+    --bg-night: #0a001a;   /* Noir Profond UV */
+    --glass-bg: rgba(15, 0, 30, 0.85);
+    --neon-border: rgba(255, 0, 127, 0.5);
+    --text-main: #ffffff;
+    --text-muted: #dddddd;
+}
+
+/* --- STYLES GLOBAUX --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { background-color: var(--bg-night); color: var(--text-main); padding-bottom: 80px; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
+h1, h2, h3 { color: var(--text-main); }
+p { color: var(--text-muted); line-height: 1.6; }
+
+/* --- BACKGROUND GÉNÉRAL --- */
+.fullscreen-bg { 
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+    background-image: url('color run.jpg'); background-size: cover; background-position: center; 
+    z-index: -10; filter: brightness(0.4) contrast(1.2); 
+}
+
+/* --- EFFETS NÉON & TEXTE --- */
+.neon-text { text-shadow: 0 0 10px var(--brand), 0 0 20px var(--brand); }
+
+/* --- EN-TÊTE --- */
+.header-v2 { 
+    display: flex; justify-content: space-between; align-items: center; padding: 15px; 
+    background: rgba(10, 0, 26, 0.95); border-bottom: 2px solid var(--brand);
+    box-shadow: 0 5px 20px rgba(255, 0, 127, 0.3); position: sticky; top: 0; z-index: 1001; 
+}
+.header-title { text-align: center; font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; flex: 1; transition: text-shadow 0.3s ease; }
+.header-title:hover { text-shadow: 0 0 15px var(--brand), 0 0 30px var(--brand), 0 0 45px var(--brand); }
+
+/* --- CONTENEUR DES PAGES CLASSIQUES --- */
+.page-content { 
+    padding: 30px 25px; max-width: 600px; margin: 20px auto; 
+    background: var(--glass-bg); backdrop-filter: blur(15px); border-radius: 20px; 
+    text-align: center; 
+    border: 1px solid var(--neon-border); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- ACCUEIL --- */
+.page-accueil-full { display: flex; justify-content: center; align-items: center; height: calc(100vh - 120px); width: 100%; position: relative; z-index: 1;}
+.overlay-welcome { 
+    background: var(--glass-bg); padding: 30px 20px; border-radius: 20px; 
+    border: 1px solid var(--neon-border); text-align: center; width: 90%; max-width: 450px; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8); backdrop-filter: blur(15px); 
+}
+.welcome-title { margin-bottom: 15px; font-size: 22px; text-transform: uppercase; font-weight: 900; }
+.welcome-text { font-size: 14px; }
+
+/* --- BOUTONS PRINCIPAUX (CTA & SCAN) --- */
+.btn-cta { 
+    background: var(--brand); color: white !important; border: none; 
+    padding: 16px 45px; font-size: 19px; border-radius: 50px; display: inline-block; 
+    font-weight: 800; cursor: pointer; transition: all 0.3s ease; margin-top: 20px; 
+    box-shadow: 0 0 15px var(--brand); text-transform: uppercase; text-decoration: none;
+    animation: pulse 2s infinite; 
+}
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 127, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 0, 127, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 127, 0); } }
+
+/* Survol de la souris sur le gros bouton d'accueil */
+.btn-cta:hover { 
+    transform: scale(1.05) translateY(-3px); 
+    box-shadow: 0 0 25px var(--brand), 0 0 50px var(--brand); 
+    text-shadow: 0 0 5px white;
+    animation: none; /* Stoppe le pulse pour laisser le hover briller */
+}
+/* Clic sur le gros bouton d'accueil */
+.btn-cta:active { transform: scale(0.95); box-shadow: 0 0 10px var(--brand); }
+
+/* Boutons classiques (Scan, Valider...) */
+.btn-group-select { 
+    width: 100%; background: var(--brand); color: white; border: none; padding: 12px 5px; 
+    border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px;
+    box-shadow: 0 0 10px var(--brand); text-transform: uppercase; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+/* Animation Néon au survol */
+.btn-group-select:hover { 
+    transform: translateY(-4px) scale(1.02); 
+    box-shadow: 0 0 20px var(--brand), 0 0 40px var(--brand); 
+    background: #ff1a8c; 
+    text-shadow: 0 0 8px white;
+}
+/* Animation flash blanc au clic */
+.btn-group-select:active { 
+    transform: scale(0.92); 
+    background: #fff; color: var(--brand) !important; 
+    box-shadow: 0 0 30px #fff; 
+    transition: 0.1s;
+}
+
+/* Boutons secondaires (Annuler, Liens Contact) */
+.btn-outline { 
+    background: transparent; color: var(--text-muted); border: 2px solid var(--text-muted); 
+    padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; 
+    width: 100%; margin-top: 10px; transition: all 0.3s ease; text-decoration: none;
+}
+.btn-outline:hover { 
+    background: rgba(0, 255, 255, 0.1); color: #fff; 
+    border-color: var(--uv-blue); 
+    box-shadow: 0 0 15px var(--uv-blue), inset 0 0 10px var(--uv-blue); 
+    text-shadow: 0 0 8px var(--uv-blue);
+    transform: translateY(-2px);
+}
+.btn-outline:active { transform: scale(0.95); }
+
+/* --- DÉFIS & CARTES DE JEUX --- */
+.game-card { 
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px; padding: 15px; margin-bottom: 15px; display: flex; 
+    align-items: center; justify-content: space-between; border-left: 5px solid var(--brand);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: left; 
+}
+/* Lueur de la carte au survol */
+.game-card:hover { 
+    background: rgba(255, 0, 127, 0.1); 
+    border-color: var(--brand); 
+    box-shadow: 0 0 20px rgba(255, 0, 127, 0.4), inset 0 0 10px rgba(255, 0, 127, 0.2); 
+    transform: translateY(-4px) scale(1.02); 
+}
+.game-card:active { transform: scale(0.98); }
+
+.game-card.done { border-left-color: var(--success); box-shadow: inset 0 0 15px rgba(57, 255, 20, 0.2); background: rgba(57, 255, 20, 0.05); }
+.game-card.done:hover { border-color: var(--success); box-shadow: 0 0 20px rgba(57, 255, 20, 0.4), inset 0 0 10px rgba(57, 255, 20, 0.2); background: rgba(57, 255, 20, 0.1); }
+
+/* Structure pour alignement parfait des boutons de scan */
+.game-card-content { flex: 1; padding-right: 15px; }
+.game-card-content h3 { font-size: 16px; margin-bottom: 5px; color: var(--text-main); transition: text-shadow 0.3s; }
+.game-card:hover .game-card-content h3 { text-shadow: 0 0 8px var(--text-main); }
+.game-card-content p { font-size: 12px; color: var(--text-muted); margin: 0; }
+.game-card-action { width: 95px; text-align: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
+/* --- MESSAGE CONFIRMATION TIRAGE AU SORT --- */
+.draw-confirmation { 
+    margin-top: 25px; padding: 20px; border-radius: 15px; border: 3px solid var(--success); 
+    background: rgba(57, 255, 20, 0.1); color: var(--success); font-weight: 900; 
+    text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px var(--success);
+    animation: pulse-success 2s infinite ease-in-out;
+}
+@keyframes pulse-success { 0% { box-shadow: 0 0 15px rgba(57, 255, 20, 0.5); } 50% { box-shadow: 0 0 35px rgba(57, 255, 20, 1); text-shadow: 0 0 10px var(--success); } 100% { box-shadow: 0 0 15px rgba(57, 255, 20, 0.5); } }
+
+/* --- MENU LATÉRAL --- */
+.hamburger-btn { color: var(--brand) !important; font-size: 30px; cursor: pointer; transition: transform 0.3s, text-shadow 0.3s; }
+.hamburger-btn:hover { transform: scale(1.1); text-shadow: 0 0 15px var(--brand); }
+
+.side-menu { background: #0a0026 !important; border-left: 2px solid var(--brand); position: fixed; top: 0; right: -250px; width: 250px; height: 100vh; z-index: 3000; transition: right 0.3s ease; display: flex; flex-direction: column; padding: 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.5); }
+.side-menu.open { right: 0; }
+.menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2999; opacity: 0; pointer-events: none; transition: 0.3s; }
+.menu-overlay.open { opacity: 1; pointer-events: auto; }
+.close-menu { align-self: flex-end; font-size: 35px; cursor: pointer; color: var(--brand); border: none; background: transparent; margin-bottom: 20px; transition: transform 0.3s; }
+.close-menu:hover { transform: rotate(90deg) scale(1.2); text-shadow: 0 0 15px var(--brand); }
+
+.side-menu a { text-decoration: none; color: white !important; font-size: 16px; font-weight: 600; padding: 15px 10px; border-bottom: 1px solid rgba(255,0,127,0.2); display: flex; align-items: center; gap: 10px; transition: all 0.3s ease; border-left: 0px solid transparent; }
+/* Animation glissement et néon sur les liens du menu */
+.side-menu a:hover { 
+    background: rgba(255, 0, 127, 0.15); 
+    color: white !important; 
+    text-shadow: 0 0 10px var(--brand); 
+    padding-left: 20px; /* Glissement vers la droite */
+    border-left: 4px solid var(--brand);
+    box-shadow: inset 5px 0 10px rgba(255,0,127,0.5);
+}
+
+/* --- MODALES --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 4000; display: none; align-items: center; justify-content: center; }
+.modal { 
+    background: #15002e; border: 2px solid var(--brand); border-radius: 25px; 
+    padding: 30px; text-align: center; width: 85%; max-width: 400px; box-shadow: 0 0 30px var(--brand);
+}
+.pwd-container { position: relative; display: flex; align-items: center; margin-bottom: 15px; width: 100%; }
+.pwd-container input { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--neon-border); background: rgba(0,0,0,0.5); color: var(--text-main); outline: none; box-sizing: border-box; text-align: center; transition: 0.3s; font-weight: bold; }
+.pwd-container input:focus { border-color: var(--uv-blue); box-shadow: 0 0 15px var(--uv-blue); }
+
+/* --- QR CODE & CLOCK --- */
+#qr-container img { border: 8px solid #fff; border-radius: 15px; box-shadow: 0 0 25px var(--uv-blue); margin: 0 auto; display: block; max-width: 100%; height: auto; transition: transform 0.3s; }
+#qr-container img:hover { transform: scale(1.05); box-shadow: 0 0 40px var(--uv-blue); }
+#live-clock { font-family: monospace; font-size: 18px; font-weight: bold; color: var(--success); background: rgba(0,0,0,0.4); display: inline-block; padding: 5px 15px; border-radius: 10px; margin-top: 10px; border: 1px solid var(--success); box-shadow: 0 0 10px rgba(57,255,20,0.5); }
+
+/* --- LOGO CONTACT --- */
+.brand-logo { margin-bottom: 20px; display: flex; justify-content: center; }
+.brand-logo img { max-width: 160px; height: auto; transition: transform 0.4s ease, filter 0.4s ease; }
+.brand-logo img:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px var(--brand)); }
+
+/* --- QUESTIONNAIRE --- */
+.survey-scale { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+.survey-option { border: 2px solid var(--neon-border); background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; flex: 1; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; }
+/* Animation bouton notation */
+.survey-option:hover { 
+    transform: translateY(-4px) scale(1.1); 
+    border-color: var(--uv-blue); 
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6); 
+    text-shadow: 0 0 8px white; 
+}
+.survey-option:active { transform: scale(0.9); }
+.survey-option.selected { background: var(--brand); border-color: var(--brand); box-shadow: 0 0 20px var(--brand), inset 0 0 10px rgba(0,0,0,0.4); transform: scale(1.1); text-shadow: 0 0 5px white; }
+
+textarea { background: rgba(0,0,0,0.3); color: white; border: 2px solid var(--neon-border); width: 100%; box-sizing: border-box; padding: 12px; border-radius: 10px; font-family: inherit; margin-bottom: 15px; outline: none; transition: 0.3s; }
+textarea:focus { border-color: var(--brand); box-shadow: 0 0 15px rgba(255, 0, 127, 0.5); }
+
+/* --- RÈGLES --- */
+.rule-box { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--neon-border); border-radius: 15px; padding: 20px; margin-bottom: 15px; text-align: left; transition: 0.3s; }
+.rule-box:hover { background: rgba(255, 0, 127, 0.1); border-color: var(--brand); box-shadow: 0 0 15px rgba(255, 0, 127, 0.3); transform: translateX(5px); }
+.rule-box h3 { margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+
+/* --- SCANNER VIDEO (Admin) --- */
+#reader { 
+    position: relative; border: 4px solid var(--brand); border-radius: 20px; 
+    overflow: hidden; box-shadow: 0 0 20px var(--brand); background-color: black;
+}
+#reader::after {
+    content: ""; position: absolute; top: 50%; left: 10%; right: 10%;
+    height: 2px; background: var(--success); box-shadow: 0 0 15px var(--success);
+    animation: scanLine 2s infinite ease-in-out; z-index: 10;
+}
+@keyframes scanLine { 0%, 100% { top: 20%; } 50% { top: 80%; } }
+
+/* --- CACHER ÉLÉMENTS INUTILES --- */
+#night-btn, .lang-btn, .lang-dropdown, .skiptranslate, .goog-te-banner-frame { display: none !important; }

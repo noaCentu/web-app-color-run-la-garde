@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Défis - Espace Gaming Color Run</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=69">
+</head>
+<body>
+    <div id="google_translate_element" style="display:none;"></div>
+    <script>function googleTranslateElementInit() { new google.translate.TranslateElement({pageLanguage: 'fr', autoDisplay: false}, 'google_translate_element'); }</script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <div class="fullscreen-bg"></div>
+
+    <div class="header-v2">
+        <div class="lang-btn" style="opacity: 0;">🎮</div>
+        <div class="header-title"><span class="notranslate">Espace Gaming</span><br><span style="font-size: 14px; color: white;">Color Run La Garde</span></div>
+        <div class="hamburger-btn" onclick="toggleMenu()">☰</div>
+    </div>
+
+    <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <button class="close-menu" onclick="toggleMenu()">×</button>
+        <a href="index.html">🏠 Accueil</a>
+        <a href="defis.html" style="color: var(--brand) !important;">🎮 Défis Gaming</a>
+        <a href="contact.html">✉️ Contact</a>
+        <a href="reglement.html">📜 Règles</a>
+        <div style="margin-top: auto; margin-bottom: 20px;">
+            <a href="index.html?admin=open" style="border-top: 1px solid var(--glass-border); border-bottom: none; font-size: 14px; margin-top: 20px;">🔒 Espace Staff</a>
+        </div>
+    </div>
+
+    <div class="page-content fade-in">
+        <div class="chart-container" style="display: flex; flex-direction: column; align-items: center; margin-top: 10px;">
+            <h3 style="color: var(--brand);">Progression</h3>
+            <div style="position: relative; width: 160px; height: 160px; margin-top: 10px;">
+                <canvas id="progress-chart" width="160" height="160"></canvas>
+                <div id="chart-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: 800; color: white;">0%</div>
+            </div>
+            
+            <button id="sync-btn" onclick="forceSync()" style="background: transparent; color: var(--brand); border: 1px solid var(--brand); padding: 5px 15px; border-radius: 15px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s;">🔄 Actualiser ma page</button>
+            <p id="last-validation-info" style="font-size: 12px; color: var(--text-muted); margin-top: 10px; display: none; font-weight: 600;"></p>
+        </div>
+        
+        <p style="margin: 20px 0;">Validez les 5 stands pour vous inscrire au tirage au sort !</p>
+        <div id="games-list"></div>
+        <div id="draw-confirmation-container"></div>
+    </div>
+
+    <div class="modal-overlay" id="animator-modal">
+        <div class="modal fade-in">
+            <h3 style="color: var(--brand);">Validation</h3>
+            <p style="font-size: 13px; margin-bottom: 5px;">Montrez ce code au bénévole du stand.</p>
+            
+            <div id="live-clock" style="font-family: monospace; font-size: 18px; font-weight: bold; color: var(--success); background: rgba(0,0,0,0.4); display: inline-block; padding: 5px 15px; border-radius: 10px; margin-top: 10px;">
+                00:00:00
+            </div>
+            
+            <div id="qr-container" style="margin: 20px 0; display:flex; justify-content:center;"></div>
+            <button class="btn-outline" onclick="closeModal()">Fermer</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="survey-modal">
+        <div class="modal fade-in">
+            <h3 style="color: var(--brand);">Questionnaire</h3>
+            <p style="font-size: 12px; margin-bottom: 15px;">Ce formulaire est rapide et anonyme.</p>
+            <div class="survey-scale" id="scale-q1"><div class="survey-option" onclick="selectOpt('q1',1)">1</div><div class="survey-option" onclick="selectOpt('q1',2)">2</div><div class="survey-option" onclick="selectOpt('q1',3)">3</div><div class="survey-option" onclick="selectOpt('q1',4)">4</div><div class="survey-option" onclick="selectOpt('q1',5)">5</div></div>
+            <div class="survey-scale" id="scale-q2"><div class="survey-option" onclick="selectOpt('q2',1)">1</div><div class="survey-option" onclick="selectOpt('q2',2)">2</div><div class="survey-option" onclick="selectOpt('q2',3)">3</div><div class="survey-option" onclick="selectOpt('q2',4)">4</div><div class="survey-option" onclick="selectOpt('q2',5)">5</div></div>
+            <div class="survey-scale" id="scale-q3"><div class="survey-option" onclick="selectOpt('q3',1)">1</div><div class="survey-option" onclick="selectOpt('q3',2)">2</div><div class="survey-option" onclick="selectOpt('q3',3)">3</div><div class="survey-option" onclick="selectOpt('q3',4)">4</div><div class="survey-option" onclick="selectOpt('q3',5)">5</div></div>
+            <textarea id="survey-comment" rows="3" placeholder="Votre message..."></textarea>
+            <button class="btn-group-select" onclick="submitSurvey()">S'inscrire au tirage au sort</button>
+            <button class="btn-outline" onclick="document.getElementById('survey-modal').style.display='none'">Annuler</button>
+            <p id="survey-error" style="color: #ff4d4d; font-size: 12px; font-weight: bold; display: none; margin-top: 5px;">Veuillez noter les 3 premières questions.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal fade-in" style="border: 3px solid var(--success); transform: scale(1.1); background: var(--modal-bg);">
+            <div style="font-size: 70px; margin-bottom: 10px;">✅</div>
+            <h2 style="color: var(--success); font-weight: 800; text-transform: uppercase;">Défi Validé !</h2>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="final-modal">
+        <div class="modal fade-in">
+            <div style="font-size: 50px;">🎟️🎉</div>
+            <h2 style="color: var(--success);">INSCRIPTION VALIDÉE !</h2>
+            <p style="font-size: 13px;">Vous êtes inscrit(e) au tirage au sort !</p>
+            <button class="btn-group-select" onclick="document.getElementById('final-modal').style.display='none'" style="margin-top:15px;">Super !</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script src="script.js?v=69"></script>
+    <script>function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('menu-overlay').classList.toggle('open'); }</script>
+</body>
+</html>
