@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Contact - Espace Gaming Color Run</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=63">
+</head>
+<body>
+    <div id="google_translate_element" style="display:none;"></div>
+    <script>function googleTranslateElementInit() { new google.translate.TranslateElement({pageLanguage: 'fr', autoDisplay: false}, 'google_translate_element'); }</script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <div class="fullscreen-bg"></div>
+
+    <div class="header-v2">
+        <div class="lang-btn" style="opacity: 0;">🎮</div>
+        <div class="header-title"><span class="notranslate">Espace Gaming</span><br><span style="font-size: 14px; color: white;">Color Run La Garde</span></div>
+        <div class="hamburger-btn" onclick="toggleMenu()">☰</div>
+    </div>
+
+    <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <button class="close-menu" onclick="toggleMenu()">×</button>
+        <a href="index.html">🏠 Accueil</a>
+        <a href="defis.html">🎮 Défis Gaming</a>
+        <a href="contact.html" style="color: var(--brand) !important;">✉️ Contact</a>
+        <a href="reglement.html">📜 Règles</a>
+        <div style="margin-top: auto; margin-bottom: 20px;">
+            <a href="index.html?admin=open" style="border-top: 1px solid var(--glass-border); border-bottom: none; font-size: 14px; margin-top: 20px;">🔒 Espace Staff</a>
+        </div>
+    </div>
+
+    <div class="page-content fade-in">
+        <div class="brand-logo">
+            <img src="centurio-logo.png" alt="Logo Centurio">
+        </div>
+        <h2 style="margin-bottom: 5px;"><span class="notranslate" style="color:var(--brand);">AGENCE CENTURIO</span></h2>
+        <p style="font-size: 12px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px;">Créateur d'Espaces Gaming</p>
+
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; gap: 12px;">
+            <a href="https://centurio.fr/" target="_blank" class="btn-outline" style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:0;">
+                🌐 Site Officiel
+            </a>
+            <a href="https://centurio.fr/nos-realisations/" target="_blank" class="btn-outline" style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:0;">
+                🎬 Nos Réalisations
+            </a>
+            <a href="https://www.instagram.com/centurio.esport/" target="_blank" class="btn-outline" style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:0;">
+                📸 Instagram
+            </a>
+            <a href="https://x.com/Centurio_agence" target="_blank" class="btn-outline" style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:0;">
+                ✖️ X (Twitter)
+            </a>
+            <a href="https://www.linkedin.com/company/agence-centurio/" target="_blank" class="btn-outline" style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:0;">
+                💼 LinkedIn
+            </a>
+            <a href="https://centurio.fr/contactez-nous/" target="_blank" class="btn-group-select" style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                ✉️ NOUS CONTACTER
+            </a>
+        </div>
+    </div>
+
+    <script src="script.js?v=63"></script>
+    <script>
+        function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('menu-overlay').classList.toggle('open'); }
+    </script>
+</body>
+</html>

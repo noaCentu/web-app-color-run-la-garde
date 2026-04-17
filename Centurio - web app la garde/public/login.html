@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Gaming Zone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=6">
+    <style>
+        .btn-cta { display: inline-block; background: var(--brand, #f8aa37); color: white; padding: 15px 40px; font-size: 18px; font-weight: 800; text-transform: uppercase; text-decoration: none; border-radius: 50px; margin-top: 30px; box-shadow: 0 5px 15px rgba(248, 170, 55, 0.4); transition: transform 0.2s; animation: pulse 2s infinite; }
+        .btn-cta:active { transform: scale(0.95); }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(248, 170, 55, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(248, 170, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(248, 170, 55, 0); } }
+        .lang-dropdown { position: relative; z-index: 1000; }
+        .lang-btn { font-size: 22px; cursor: pointer; background: transparent; border: none; display: flex; align-items: center; justify-content: center; user-select: none; transition: transform 0.2s; }
+        .lang-btn:active { transform: scale(0.9); }
+        .lang-menu { display: none; position: absolute; top: 35px; left: 0; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); overflow: hidden; width: 140px; text-align: left; }
+        .lang-menu div { padding: 12px 15px; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; color: #333; transition: background 0.2s; }
+        .lang-menu div:hover { background: #f0f0f0; }
+        body > .skiptranslate { display: none !important; }
+        body { top: 0px !important; }
+        .goog-te-banner-frame { display: none !important; }
+        .goog-tooltip { display: none !important; }
+        .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+        .pwd-container { position: relative; display: flex; align-items: center; margin-bottom: 15px; }
+        .pwd-container input { width: 100%; padding-right: 45px !important; }
+        .toggle-pwd { position: absolute; right: 15px; cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
+        .toggle-pwd:hover { color: var(--brand); }
+    </style>
+</head>
+<body>
+    <div class="header-v2" style="display: flex; align-items: center; justify-content: space-between; padding: 0 15px;">
+        <div class="lang-dropdown">
+            <div class="lang-btn" onclick="toggleLang()">🇫🇷</div>
+            <div class="lang-menu" id="lang-list">
+                <div onclick="changeLang('fr', '🇫🇷')">🇫🇷 Français</div>
+                <div onclick="changeLang('en', '🇬🇧')">🇬🇧 English</div>
+                <div onclick="changeLang('es', '🇪🇸')">🇪🇸 Español</div>
+                <div onclick="changeLang('de', '🇩🇪')">🇩🇪 Deutsch</div>
+                <div onclick="changeLang('it', '🇮🇹')">🇮🇹 Italiano</div>
+                <div onclick="changeLang('zh-CN', '🇨🇳')">🇨🇳 中文</div>
+            </div>
+        </div>
+        <div class="header-title" style="flex: 1; text-align: center; line-height: 1.2;">Gaming Zone<br><span style="font-size: 14px;">24h du Mans</span></div>
+        <div onclick="checkAdmin()" style="font-size: 20px; cursor: pointer;">🔒</div>
+    </div>
+
+    <div class="page-accueil-full">
+        <div class="overlay-welcome" style="text-align: center;">
+            <h2 class="welcome-title">Bienvenue à la Gaming Zone</h2>
+            <p class="welcome-text">Prêt à faire chauffer les manettes ? 🔥<br><br>Parcourez nos différents stands, relevez les défis et faites-les valider par nos animateurs. Une fois prêt, rendez-vous à l'accueil pour récupérer votre cadeau exclusif Centurio !</p>
+            <a href="defis.html" class="btn-cta">C'est parti ! 🎮</a>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-btn active">Accueil</a>
+        <a href="defis.html" class="nav-btn">Défis</a>
+        <a href="contact.html" class="nav-btn">Contact</a>
+        <a href="reglement.html" class="nav-btn">Règles</a>
+    </nav>
+
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal">
+            <h3>Connexion Sécurisée</h3>
+            <p style="font-size: 12px; margin-bottom: 15px; color: #666;">Accès réservé au staff Centurio.</p>
+            <div class="pwd-container">
+                <input type="password" id="admin-pwd" placeholder="Mot de passe">
+                <div class="toggle-pwd" onclick="togglePassword()">
+                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </div>
+            </div>
+            <button class="btn-submit" onclick="login()">Se connecter</button>
+            <button class="btn-cancel" onclick="document.getElementById('login-modal').style.display='none'">Fermer</button>
+            <p id="login-error" style="color: red; font-weight: bold; display: none; margin-top: 10px;">Mot de passe incorrect</p>
+        </div>
+    </div>
+
+    <div id="google_translate_element" style="display:none;"></div>
+    <script>function googleTranslateElementInit() { new google.translate.TranslateElement({pageLanguage: 'fr', autoDisplay: false}, 'google_translate_element'); }</script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script>
+        function togglePassword() {
+            const pwdInput = document.getElementById('admin-pwd');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                eyeIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+            } else {
+                pwdInput.type = 'password';
+                eyeIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+            }
+        }
+        if (localStorage.getItem('centurioAdminToken') || localStorage.getItem('centurioStatsToken')) {
+            localStorage.removeItem('centurioAdminToken'); localStorage.removeItem('centurioStatsToken'); sessionStorage.clear();
+        }
+        function checkAdmin() {
+            const admin = sessionStorage.getItem('centurioAdminToken');
+            const stats = sessionStorage.getItem('centurioStatsToken');
+            if (admin) window.location.href = "scan.html";
+            else if (stats) window.location.href = "stats.html";
+            else document.getElementById('login-modal').style.display = 'flex';
+        }
+        function login() {
+            const pwd = document.getElementById('admin-pwd').value;
+            const errorMsg = document.getElementById('login-error');
+            fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwd }) })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) { 
+                    sessionStorage.clear();
+                    if(data.role === 'admin') { sessionStorage.setItem('centurioAdminToken', data.token); window.location.href = "scan.html"; } 
+                    else if (data.role === 'stats') { sessionStorage.setItem('centurioStatsToken', data.token); window.location.href = "stats.html"; }
+                } else errorMsg.style.display = 'block'; 
+            }).catch(err => alert("Erreur de connexion au serveur."));
+        }
+        function toggleLang() { const menu = document.getElementById('lang-list'); menu.style.display = menu.style.display === 'block' ? 'none' : 'block'; }
+        function changeLang(langCode, flag) { document.querySelector('.lang-btn').innerText = flag; document.getElementById('lang-list').style.display = 'none'; localStorage.setItem('centurioFlag', flag); const select = document.querySelector('.goog-te-combo'); if (select) { select.value = langCode; select.dispatchEvent(new Event('change')); } else { document.cookie = `googtrans=/fr/${langCode}; path=/`; window.location.reload(); } }
+        document.addEventListener('DOMContentLoaded', () => { const savedFlag = localStorage.getItem('centurioFlag'); if (savedFlag) document.querySelector('.lang-btn').innerText = savedFlag; });
+    </script>
+</body>
+</html>
