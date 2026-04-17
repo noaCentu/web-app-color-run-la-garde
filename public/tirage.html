@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tirage au Sort - Color Run</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=73">
+    <link rel="stylesheet" href="style.css?v=74">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body { 
@@ -13,129 +13,156 @@
             height: 100vh; overflow: hidden; background-color: var(--bg-night); 
         }
         
-        .header-v2 { position: absolute; top:0; width:100%; z-index: 1000; }
+        .header-v2 { position: absolute; top:0; width:100%; z-index: 1000; background: rgba(10, 0, 26, 0.8) !important; backdrop-filter: blur(10px); border-bottom: 2px solid var(--brand); }
 
-        /* Conteneur principal */
+        /* --- LA SCÈNE ET LE SOCLE --- */
         .main-container {
             display: flex; flex-direction: column; align-items: center;
-            margin-top: 50px;
+            margin-top: 60px;
             z-index: 10;
+            position: relative;
         }
 
-        /* --- LA ROUE DE LA FORTUNE --- */
+        /* Halo lumineux derrière la roue */
+        .wheel-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 450px; height: 450px;
+            background: radial-gradient(circle, rgba(255, 0, 127, 0.4) 0%, rgba(0, 255, 255, 0.2) 50%, transparent 70%);
+            border-radius: 50%;
+            z-index: 1;
+            animation: pulse-glow 3s infinite alternate;
+        }
+        @keyframes pulse-glow { 0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; } 100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } }
+
+        /* --- LA ROUE --- */
         .wheel-wrapper {
             position: relative;
-            width: 380px; height: 380px;
-            margin: 20px auto;
+            width: 420px; height: 420px;
+            margin: 0 auto;
+            z-index: 10;
             transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-origin: center top; /* Pour le zoom final sur le gagnant */
+            transform-origin: center center;
         }
-        .wheel-wrapper.zoomed {
-            transform: scale(1.4) translateY(30px);
-        }
+        .wheel-wrapper.zoomed { transform: scale(1.3) translateY(20px); z-index: 500; }
 
-        /* Le Pointeur rouge en haut */
         .pointer {
             position: absolute;
-            top: -20px; left: 50%;
+            top: -25px; left: 50%;
             transform: translateX(-50%);
             width: 0; height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 50px solid #ff1a1a;
-            z-index: 20;
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.6));
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-top: 60px solid #ff1a1a;
+            z-index: 30;
+            filter: drop-shadow(0 8px 6px rgba(0,0,0,0.8));
             transform-origin: top center;
         }
-        /* Effet de cliquetis quand ça tourne */
-        @keyframes tick { 0% { transform: translateX(-50%) rotate(0deg); } 50% { transform: translateX(-50%) rotate(-15deg); } 100% { transform: translateX(-50%) rotate(0deg); } }
+        @keyframes tick { 0% { transform: translateX(-50%) rotate(0deg); } 50% { transform: translateX(-50%) rotate(-18deg); } 100% { transform: translateX(-50%) rotate(0deg); } }
         .pointer.ticking { animation: tick 0.1s infinite; }
 
-        /* Le cercle de la roue */
         .wheel {
             width: 100%; height: 100%;
             border-radius: 50%;
-            border: 10px solid #fff;
-            box-shadow: 0 0 30px rgba(255, 0, 127, 0.5), inset 0 0 20px rgba(0,0,0,0.5);
+            border: 12px solid #222; /* Contour sombre façon pneu/métal */
+            box-shadow: 0 0 0 6px var(--uv-blue), 0 20px 40px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.7);
             position: relative;
             overflow: hidden;
-            /* La transition gère le freinage réaliste (de très vite à très lent) */
             transition: transform 7s cubic-bezier(0.15, 0.85, 0.15, 1);
         }
 
-        /* L'axe central */
         .wheel-center {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 40px; height: 40px;
-            background: radial-gradient(circle, #fff, #999);
+            width: 60px; height: 60px;
+            background: radial-gradient(circle, #fff 0%, #888 70%, #333 100%);
             border-radius: 50%;
-            border: 4px solid #333;
+            border: 5px solid #111;
             z-index: 15;
-            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+            box-shadow: 0 0 20px rgba(0,0,0,0.9), inset 0 2px 5px rgba(255,255,255,0.8);
         }
 
-        /* Le texte dans les cases */
         .wheel-text {
             position: absolute;
             top: 50%; left: 50%;
-            width: 50%; height: 30px;
-            margin-top: -15px; /* Centrage vertical */
-            transform-origin: 0 50%; /* Rotation autour du centre de la roue */
+            width: 50%; height: 40px;
+            margin-top: -20px;
+            transform-origin: 0 50%;
             text-align: right;
-            padding-right: 35px; /* Espace pour ne pas toucher le bord */
+            padding-right: 45px;
             box-sizing: border-box;
-            font-weight: 800;
-            font-size: 15px;
-            color: #000;
+            font-weight: 900;
+            font-size: 16px;
+            color: #111;
             text-transform: uppercase;
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.7);
-            white-space: nowrap;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+            line-height: 40px;
         }
 
-        /* Les petits clous dorés sur les bords */
         .peg {
             position: absolute;
             top: 50%; left: 50%;
-            width: 12px; height: 12px;
-            margin-top: -6px; margin-left: -6px;
-            background: radial-gradient(circle, #ffd700, #b8860b);
+            width: 14px; height: 14px;
+            margin-top: -7px; margin-left: -7px;
+            background: radial-gradient(circle, #fff, #bbb);
             border-radius: 50%;
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.8), inset -2px -2px 4px rgba(0,0,0,0.4);
             z-index: 10;
         }
 
-        /* Bouton Lancer */
-        .btn-lancer {
-            background: var(--uv-blue); color: black; font-size: 26px;
-            padding: 20px 50px; border-radius: 50px; border: none;
-            font-weight: 900; cursor: pointer; text-transform: uppercase;
-            box-shadow: 0 0 25px var(--uv-blue); transition: 0.3s; margin-top: 40px;
-            animation: pulse-btn 2s infinite; z-index: 10;
+        /* Le Socle de la roue */
+        .wheel-stand-pillar {
+            width: 80px; height: 60px;
+            background: linear-gradient(to right, #222, #444, #222);
+            margin: -10px auto 0;
+            position: relative; z-index: 5;
+            border-left: 2px solid #555; border-right: 2px solid #111;
+            box-shadow: inset 0 20px 20px rgba(0,0,0,0.8);
         }
-        .btn-lancer:hover { transform: scale(1.05); box-shadow: 0 0 50px var(--uv-blue); background: #fff; }
-        .btn-lancer:active { transform: scale(0.95); }
-        @keyframes pulse-btn { 0% { box-shadow: 0 0 15px var(--uv-blue); } 50% { box-shadow: 0 0 35px var(--uv-blue); } 100% { box-shadow: 0 0 15px var(--uv-blue); } }
+        .wheel-stand-base {
+            width: 300px; height: 30px;
+            background: linear-gradient(to bottom, #333, #111);
+            border-radius: 15px 15px 5px 5px;
+            margin: 0 auto;
+            position: relative; z-index: 4;
+            border-bottom: 4px solid var(--brand);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.9), 0 0 20px rgba(255,0,127,0.3);
+        }
 
-        /* Le Nom affiché en géant à la fin */
-        .winner-banner {
-            display: none;
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: #fff; color: #000;
-            padding: 20px 40px; border-radius: 15px;
-            border: 5px solid var(--success);
-            box-shadow: 0 0 50px var(--success), 0 20px 50px rgba(0,0,0,0.8);
-            text-align: center; z-index: 100;
-            animation: popBanner 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        /* --- BOUTON ARCADE --- */
+        .btn-arcade {
+            background: linear-gradient(to bottom, var(--success), #22990b);
+            color: #000; font-size: 28px;
+            padding: 20px 60px; border-radius: 50px; border: none;
+            font-weight: 900; cursor: pointer; text-transform: uppercase;
+            box-shadow: 0 10px 0 #155d07, 0 15px 30px rgba(0,0,0,0.8), 0 0 40px rgba(57, 255, 20, 0.4);
+            transition: 0.2s; margin-top: 50px; z-index: 20; position: relative;
+            letter-spacing: 1px;
         }
-        .winner-banner h3 { font-size: 20px; color: #555; margin-bottom: 5px; text-transform: uppercase;}
-        .winner-banner h1 { font-size: 45px; color: var(--success); font-weight: 900; margin: 0; line-height: 1; text-transform: uppercase; text-shadow: 1px 1px 0 #000;}
+        .btn-arcade:hover { filter: brightness(1.2); box-shadow: 0 10px 0 #155d07, 0 15px 30px rgba(0,0,0,0.8), 0 0 60px rgba(57, 255, 20, 0.8); transform: translateY(-2px); }
+        .btn-arcade:active { transform: translateY(8px); box-shadow: 0 2px 0 #155d07, 0 5px 10px rgba(0,0,0,0.8), 0 0 20px rgba(57, 255, 20, 0.6); }
+
+        /* --- LE TICKET D'OR (Bannière Gagnant) --- */
+        .winner-banner {
+            display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #150030 0%, #0a001a 100%);
+            color: #fff; padding: 40px 60px; border-radius: 25px;
+            border: 4px solid var(--uv-blue);
+            box-shadow: 0 0 80px var(--uv-blue), inset 0 0 40px rgba(0, 255, 255, 0.2), 0 30px 60px rgba(0,0,0,0.9);
+            text-align: center; z-index: 1000;
+            animation: popTicket 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .winner-banner::before {
+            content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border: 2px dashed var(--brand); border-radius: 30px; pointer-events: none; opacity: 0.5;
+        }
+        .winner-banner h3 { font-size: 22px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 3px; }
+        .winner-banner h1 { font-size: 60px; color: var(--success); font-weight: 900; margin: 0; line-height: 1.1; text-transform: uppercase; text-shadow: 0 0 20px rgba(57,255,20,0.5), 3px 3px 0 #000; }
         
-        @keyframes popBanner { 0% { transform: translate(-50%, -50%) scale(0); } 100% { transform: translate(-50%, -50%) scale(1); } }
-        #empty-msg { color: #ff4d4d; font-weight: bold; font-size: 20px; display: none; margin-top: 20px; text-shadow: 0 0 10px red; }
+        @keyframes popTicket { 0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; } }
+        #empty-msg { color: #ff4d4d; font-weight: bold; font-size: 20px; display: none; margin-top: 20px; text-shadow: 0 0 10px red; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 10px; z-index: 20; }
     </style>
 </head>
 <body>
@@ -143,7 +170,7 @@
 
     <div class="header-v2">
         <div style="width:30px;"></div>
-        <div class="header-title neon-text">TIRAGE AU SORT 🎰</div>
+        <div class="header-title neon-text" style="font-size: 24px;">TIRAGE AU SORT 🎰</div>
         <div class="hamburger-btn" id="admin-menu-btn" onclick="toggleMenu()" style="display:none; font-size:25px; cursor:pointer;">☰</div>
     </div>
     
@@ -160,20 +187,24 @@
 
     <div class="main-container">
         
+        <div class="wheel-glow" id="wheel-glow"></div>
+
         <div class="wheel-wrapper" id="wheel-wrapper">
             <div class="pointer" id="wheel-pointer"></div>
             <div class="wheel" id="wheel">
                 </div>
             <div class="wheel-center"></div>
         </div>
+        <div class="wheel-stand-pillar"></div>
+        <div class="wheel-stand-base"></div>
 
-        <button class="btn-lancer" id="btn-action" onclick="lancerRoulette()">LANCER LA ROUE !</button>
+        <button class="btn-arcade" id="btn-action" onclick="lancerRoulette()">LANCER LA ROUE</button>
         <p id="empty-msg">🚨 Aucun participant inscrit pour le moment !</p>
 
         <div class="winner-banner" id="winner-banner">
             <h3>Le grand gagnant est</h3>
             <h1 id="winner-name-display">NOM</h1>
-            <button class="btn-group-select" style="margin-top: 20px;" onclick="window.location.reload()">🔄 Refaire un tirage</button>
+            <button class="btn-group-select" style="margin-top: 30px; font-size: 18px; padding: 15px;" onclick="window.location.reload()">🔄 Refaire un tirage</button>
         </div>
 
     </div>
@@ -188,9 +219,24 @@
         function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('menu-overlay').classList.toggle('open'); }
         function logout() { sessionStorage.clear(); window.location.href = "index.html"; }
 
-        // Palette de couleurs Fluo pour les cases
-        const sliceColors = ['#FF007F', '#39FF14', '#00FFFF', '#FFFF00', '#FF9900', '#9D00FF'];
+        // Palette de couleurs Fluo très saturées pour que ça flashe
+        const sliceColors = ['#FF0055', '#00DDFF', '#FFDD00', '#39FF14', '#9D00FF', '#FF6600'];
         
+        // Initialisation de la roue vide pour faire joli avant le clic
+        const initWheel = document.getElementById('wheel');
+        let initGradients = [];
+        for(let i=0; i<16; i++) {
+            let start = i * (360/16); let end = (i+1) * (360/16);
+            initGradients.push(`${sliceColors[i%sliceColors.length]} ${start}deg ${end}deg`);
+        }
+        initWheel.style.background = `conic-gradient(${initGradients.join(', ')})`;
+        for(let i=0; i<16; i++) {
+            let peg = document.createElement('div');
+            peg.className = 'peg';
+            peg.style.transform = `rotate(${i * (360 / 16)}deg) translateX(195px)`; // Ajusté pour le nouveau diamètre
+            initWheel.appendChild(peg);
+        }
+
         function lancerRoulette() {
             const btn = document.getElementById('btn-action');
             const emptyMsg = document.getElementById('empty-msg');
@@ -199,7 +245,6 @@
             
             btn.style.display = 'none';
 
-            // Requête au serveur pour tirer le gagnant aléatoire
             fetch('/api/tirage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token }) })
             .then(res => res.json())
             .then(data => {
@@ -210,88 +255,70 @@
                     return;
                 }
 
-                // 1. Construction de la Roue
-                const N = 16; // Nombre de cases sur la roue
+                // 1. Construction de la Roue de 16 cases
+                const N = 16; 
                 let participants = [];
+                for(let i = 0; i < N - 1; i++) participants.push(data.fauxNoms[i % data.fauxNoms.length]);
                 
-                // On remplit avec les faux noms
-                for(let i = 0; i < N - 1; i++) {
-                    participants.push(data.fauxNoms[i % data.fauxNoms.length]);
-                }
-                
-                // On ajoute le VRAI gagnant et on mélange le tout
                 const winnerFullName = `${data.winner.prenom} ${data.winner.nom.charAt(0).toUpperCase()}.`;
                 participants.push(winnerFullName);
-                participants = participants.sort(() => 0.5 - Math.random()); // Mélange aléatoire
-                
-                // On retrouve à quel endroit se trouve le gagnant après le mélange
+                participants = participants.sort(() => 0.5 - Math.random()); 
                 const winnerIndex = participants.indexOf(winnerFullName);
 
-                // Dessin du fond de la roue (CSS Conic Gradient)
+                // Application du design de la roue remplie
                 let gradientParts = [];
                 for(let i = 0; i < N; i++) {
-                    let startAngle = i * (360 / N);
-                    let endAngle = (i + 1) * (360 / N);
-                    let color = sliceColors[i % sliceColors.length];
-                    gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+                    let startAngle = i * (360 / N); let endAngle = (i + 1) * (360 / N);
+                    gradientParts.push(`${sliceColors[i % sliceColors.length]} ${startAngle}deg ${endAngle}deg`);
                 }
                 wheel.style.background = `conic-gradient(${gradientParts.join(', ')})`;
 
-                // Ajout des textes et des clous
                 wheel.innerHTML = '';
                 for(let i = 0; i < N; i++) {
-                    // Positionnement du texte au milieu de sa case
                     let textAngle = i * (360 / N) + (360 / N) / 2;
                     let textSpan = document.createElement('div');
                     textSpan.className = 'wheel-text';
                     textSpan.style.transform = `rotate(${textAngle}deg)`;
-                    // On coupe les noms trop longs pour pas que ça dépasse
-                    let displayName = participants[i].length > 12 ? participants[i].substring(0, 10) + '...' : participants[i];
-                    textSpan.innerText = displayName;
+                    textSpan.innerText = participants[i].length > 12 ? participants[i].substring(0, 10) + '...' : participants[i];
                     wheel.appendChild(textSpan);
 
-                    // Ajout du petit clou doré sur le bord de chaque séparation
                     let peg = document.createElement('div');
                     peg.className = 'peg';
-                    // Le clou se place sur la ligne de démarcation, et on le pousse vers le bord (180px)
-                    peg.style.transform = `rotate(${i * (360 / N)}deg) translateX(175px)`;
+                    peg.style.transform = `rotate(${i * (360 / N)}deg) translateX(195px)`;
                     wheel.appendChild(peg);
                 }
 
-                // 2. Calcul Mathématique de la Rotation Finale
-                // Pour que la case du gagnant soit alignée avec le pointeur rouge (en haut = -90 degrés)
+                // 2. Calcul Mathématique
                 const anglePerSlice = 360 / N;
                 const targetAngle = winnerIndex * anglePerSlice + (anglePerSlice / 2);
-                // On fait faire 12 tours complets à la roue pour le show
-                const totalRotation = (360 * 12) - 90 - targetAngle;
+                const totalRotation = (360 * 15) - 90 - targetAngle; // 15 tours complets pour plus de suspense !
 
-                // Forcer le DOM à s'actualiser avant d'animer
                 void wheel.offsetWidth; 
 
-                // Lancement de la rotation (7 secondes)
+                // 3. Animation
                 wheel.style.transform = `rotate(${totalRotation}deg)`;
-                pointer.classList.add('ticking'); // Le pointeur cliquette
+                pointer.classList.add('ticking'); 
+                document.getElementById('wheel-glow').style.animationDuration = "0.5s"; // Le glow pulse super vite !
 
-                // 3. Révélation finale !
+                // 4. Révélation (Après 7 secondes)
                 setTimeout(() => {
-                    pointer.classList.remove('ticking'); // Arrêt du cliquetis
+                    pointer.classList.remove('ticking'); 
+                    document.getElementById('wheel-glow').style.animationDuration = "3s"; // Retour au calme
                     
-                    // Zoom dramatique sur la roue
                     document.getElementById('wheel-wrapper').classList.add('zoomed');
 
-                    // Affichage de la bannière GAGNANT par dessus + Confettis
                     setTimeout(() => {
                         document.getElementById('winner-name-display').innerText = winnerFullName;
                         document.getElementById('winner-banner').style.display = 'block';
 
-                        // Explosion de poudre Fluo massive
+                        // ÉNORME EXPLOSION DE CONFETTIS
                         const fluoColors = ['#FF007F', '#39FF14', '#00FFFF', '#FFFF00', '#FF00FF'];
-                        confetti({ particleCount: 1000, spread: 360, startVelocity: 80, scalar: 1.3, colors: fluoColors, zIndex: 9999 });
-                        setTimeout(() => confetti({ particleCount: 500, spread: 360, startVelocity: 60, colors: fluoColors, zIndex: 9999 }), 600);
+                        confetti({ particleCount: 1500, spread: 360, startVelocity: 90, scalar: 1.5, colors: fluoColors, zIndex: 9999 });
+                        setTimeout(() => confetti({ particleCount: 800, spread: 360, startVelocity: 70, colors: fluoColors, zIndex: 9999 }), 800);
 
-                    }, 800); // 800ms après le zoom
+                    }, 1000); // Temps de laisser la roue zoomer
                     
-                }, 7000); // 7 secondes = la durée exacte de la rotation CSS
+                }, 7000); 
             });
         }
     </script>
