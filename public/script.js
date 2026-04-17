@@ -1,4 +1,4 @@
-console.log("🚀 Script Color Run Night v71 - Inscription avec Nom/Prenom");
+console.log("🚀 Script Color Run Night v72 - Poudre au premier plan !");
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -10,9 +10,17 @@ function firePowder() {
     if (typeof confetti !== 'undefined') {
         const fluoColors = ['#FF007F', '#39FF14', '#00FFFF', '#FFFF00', '#FF00FF'];
         confetti({
-            particleCount: 400, startVelocity: 45, spread: 360, ticks: 100,
-            gravity: 0.6, scalar: 0.6, shapes: ['circle'], colors: fluoColors,
-            origin: { x: 0.5, y: 0.4 }, disableForReducedMotion: true
+            particleCount: 400, 
+            startVelocity: 45, 
+            spread: 360, 
+            ticks: 120,
+            gravity: 0.6, 
+            scalar: 0.6, 
+            shapes: ['circle'], 
+            colors: fluoColors,
+            origin: { x: 0.5, y: 0.4 }, 
+            disableForReducedMotion: true,
+            zIndex: 9999 // 🚨 C'EST ÇA QUI MANQUAIT : La poudre passe AU-DESSUS du pop-up !
         });
     }
 }
@@ -36,7 +44,7 @@ window.forceSync = function() {
     syncWithServer();
     setTimeout(() => {
         if(btn) { btn.innerText = "✅ À jour !"; btn.style.opacity = "1";
-            setTimeout(() => { btn.innerText = "🔄 Actualiser ma page"; }, 2000);
+            setTimeout(() => { btn.innerText = "🔄 Actualiser"; }, 2000);
         }
     }, 800);
 };
@@ -67,9 +75,12 @@ try {
             localStorage.setItem('centurioProgress', JSON.stringify(progress));
             if (typeof closeModal === 'function') closeModal();
             if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-            firePowder();
+            
+            // On affiche le pop-up ET on tire la poudre par dessus !
             const sModal = document.getElementById('success-modal');
             if(sModal) { sModal.style.display = 'flex'; setTimeout(() => sModal.style.display = 'none', 2500); }
+            firePowder();
+            
             if (document.getElementById('games-list')) renderGames();
         });
     }
