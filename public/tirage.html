@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tirage au Sort - Color Run</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=70">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .slot-machine {
+            background: rgba(0, 0, 0, 0.8); border: 4px solid var(--brand);
+            border-radius: 20px; padding: 40px; width: 90%; max-width: 800px;
+            text-align: center; box-shadow: 0 0 50px var(--brand);
+        }
+        .name-display {
+            font-size: 50px; font-weight: 900; color: var(--success);
+            text-transform: uppercase; height: 80px; overflow: hidden;
+            text-shadow: 0 0 20px var(--success); margin: 30px 0;
+        }
+        .btn-lancer {
+            background: var(--uv-blue); color: black; font-size: 24px;
+            padding: 20px 50px; border-radius: 50px; border: none;
+            font-weight: 900; cursor: pointer; text-transform: uppercase;
+            box-shadow: 0 0 25px var(--uv-blue); transition: 0.3s;
+        }
+        .btn-lancer:hover { transform: scale(1.1); box-shadow: 0 0 50px var(--uv-blue); }
+        .btn-lancer:active { transform: scale(0.9); }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-bg"></div>
+    <div class="header-v2" style="position: absolute; top:0; width:100%;">
+        <div class="header-title neon-text">TIRAGE AU SORT 🎰</div>
+        <div class="hamburger-btn" onclick="window.location.href='scan.html'" style="font-size:20px; text-decoration:none;">⬅ Retour</div>
+    </div>
+
+    <div class="slot-machine">
+        <h2 style="color: white; font-size: 30px;">LE GRAND GAGNANT EST...</h2>
+        <div class="name-display" id="name-box">???</div>
+        <button class="btn-lancer" id="btn-action" onclick="lancerTirage()">LANCER LA ROULETTE !</button>
+    </div>
+
+    <script>
+        const token = sessionStorage.getItem('centurioStatsToken');
+        if (!token) window.location.href = "index.html";
+
+        function lancerTirage() {
+            const btn = document.getElementById('btn-action');
+            const nameBox = document.getElementById('name-box');
+            
+            btn.style.display = 'none';
+            nameBox.style.color = "white";
+            nameBox.style.textShadow = "none";
+
+            fetch('/api/tirage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token }) })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    nameBox.innerText = "AUCUN INSCRIT";
+                    btn.style.display = 'inline-block';
+                    return;
+                }
+
+                // Animation Machine à sous rapide (avec les faux noms)
+                let i = 0;
+                let interval = setInterval(() => {
+                    nameBox.innerText = data.fauxNoms[i % data.fauxNoms.length];
+                    i++;
+                }, 100);
+
+                // Au bout de 4 secondes, on s'arrête sur le VRAI gagnant
+                setTimeout(() => {
+                    clearInterval(interval);
+                    nameBox.innerText = `${data.winner.prenom} ${data.winner.nom}`;
+                    nameBox.style.color = "var(--success)";
+                    nameBox.style.textShadow = "0 0 30px var(--success)";
+                    
+                    // Explosion de poudre
+                    const fluoColors = ['#FF007F', '#39FF14', '#00FFFF', '#FFFF00', '#FF00FF'];
+                    confetti({ particleCount: 600, spread: 360, startVelocity: 60, colors: fluoColors });
+                    
+                    btn.innerText = "REFAIRE UN TIRAGE";
+                    btn.style.display = 'inline-block';
+                }, 4000);
+            });
+        }
+    </script>
+</body>
+</html>
