@@ -9,8 +9,9 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 // --- 🔒 PARAMÈTRES DE SÉCURITÉ MODIFIÉS ---
-const MOT_DE_PASSE_MATIN = "admin";  // Accès SCAN uniquement
-const MOT_DE_PASSE_STATS = "admin+"; // Accès SCAN + STATS + TIRAGE
+const MOT_DE_PASSE_MATIN = "admin";  
+const MOT_DE_PASSE_STATS = "admin+"; 
+const MOT_DE_PASSE_RESET = "resetparty13"; 
 const ADMIN_TOKEN = "jeton_secret_incassable_2024_xyz"; 
 const STATS_TOKEN = "jeton_secret_stats_2026_abc"; 
 
@@ -20,7 +21,6 @@ function getTodayDate() {
     return new Date().toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' });
 }
 
-// 🚨 AJOUT DES NOMS ET PRÉNOMS ICI
 const PlayerSchema = new mongoose.Schema({
     userId: String,
     games: [String],
@@ -36,6 +36,7 @@ const StatsSchema = new mongoose.Schema({
     totalVisiteurs: { type: Number, default: 0 },
     maxConcurrentUsers: { type: Number, default: 0 }, 
     totalGagnants: { type: Number, default: 0 },
+    totalAdmins: { type: Number, default: 0 },
     gameStats: { type: Map, of: Number, default: {} },
     surveyRespondents: { type: Number, default: 0 },
     surveyScores: {
@@ -192,7 +193,6 @@ app.post('/api/survey', async (req, res) => {
 });
 
 app.post('/api/admin_survey', async (req, res) => {
-    // Identique à avant
     const { q1, q2, q3, comment, token } = req.body;
     if(token !== ADMIN_TOKEN && token !== STATS_TOKEN) return res.json({ success: false });
     if(!q1 || !q2) return res.json({ success: false }); 
@@ -218,15 +218,12 @@ app.post('/api/admin_survey', async (req, res) => {
 app.post('/api/tirage', async (req, res) => {
     if (req.body.token !== STATS_TOKEN) return res.json({ success: false, message: "Non autorisé" });
     try {
-        // On récupère uniquement ceux qui ont fini le questionnaire (donc inscrit)
         const participants = await Player.find({ surveyDone: true });
         if (participants.length === 0) return res.json({ success: false, message: "Aucun participant inscrit pour l'instant." });
         
-        // On tire au sort
         const winnerIndex = Math.floor(Math.random() * participants.length);
         const winner = participants[winnerIndex];
         
-        // On renvoie toute une liste de faux noms pour l'animation + le VRAI gagnant à la fin
         const fauxNoms = participants.map(p => `${p.prenom} ${p.nom.charAt(0).toUpperCase()}.`).sort(() => 0.5 - Math.random()).slice(0, 20);
         
         res.json({ 
@@ -237,6 +234,7 @@ app.post('/api/tirage', async (req, res) => {
     } catch(e) { res.json({ success: false, message: "Erreur serveur" }); }
 });
 
+// --- 📊 ROUTES STATISTIQUES ---
 app.post('/api/stats_data', async (req, res) => {
     if (req.body.token === STATS_TOKEN) {
         try {
@@ -251,15 +249,6 @@ app.post('/api/stats_data', async (req, res) => {
                 };
             });
             res.json({ success: true, allData: result });
-        } catch(e) { res.json({ success: false }); }
-    } else res.json({ success: false });
-});
-
-app.post('/api/reset_stats', async (req, res) => {
-    if (req.body.token === STATS_TOKEN) {
-        try {
-            await GlobalStat.deleteMany({}); await Player.deleteMany({}); await initStats("main"); 
-            res.json({ success: true });
         } catch(e) { res.json({ success: false }); }
     } else res.json({ success: false });
 });
