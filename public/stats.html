@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Stats - Centurio</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=52">
+    <link rel="stylesheet" href="style.css?v=71">
     <link rel="icon" type="image/png" href="/centurio-logo.png?v=3">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -44,9 +44,9 @@
         p { color: var(--text-muted) !important; }
 
         /* 🚨 BARRE TOUJOURS SOMBRE 🚨 */
-        .header-v2 { position: relative; z-index: 10; display: flex; align-items: center; justify-content: center; padding: 15px; }
+        .header-v2 { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 15px; }
         body.light-mode .header-v2 { background-color: #291834; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .header-title { color: #ffffff !important; font-weight: 800; font-size: 20px; }
+        .header-title { color: #ffffff !important; font-weight: 800; font-size: 20px; text-align: center; flex: 1; }
         .header-title span { color: var(--brand, #f8aa37); }
 
         /* CONTENEUR PRINCIPAL */
@@ -95,7 +95,7 @@
            🖨️ LE MODE IMPRESSION NATIF (Pour un PDF Parfait)
            ========================================================= */
         @media print {
-            .header-v2, .filter-box, .tabs, .btn-pdf, .btn-csv, .btn-reset, .btn-cancel, #night-btn, .fullscreen-bg { display: none !important; }
+            .header-v2, .filter-box, .tabs, .btn-pdf, .btn-csv, .btn-reset, .btn-cancel, #night-btn, .fullscreen-bg, #admin-menu-btn, .menu-overlay, .side-menu { display: none !important; }
             html, body { background: white !important; background-color: white !important; margin: 0 !important; padding: 0 !important; color: black !important; }
             .page-content { background: transparent !important; box-shadow: none !important; border: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
             #pdf-content { background: white !important; padding: 0 !important; border-radius: 0 !important; }
@@ -111,7 +111,19 @@
     <div class="fullscreen-bg"></div>
 
     <div class="header-v2">
-        <div class="header-title">Espace <span>Stats</span></div>
+        <div style="width:30px;"></div> <div class="header-title">Espace <span>Stats</span></div>
+        <div class="hamburger-btn" id="admin-menu-btn" onclick="toggleMenu()" style="display:none; font-size:25px; cursor:pointer;">☰</div>
+    </div>
+
+    <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <button class="close-menu" onclick="toggleMenu()">×</button>
+        <a href="scan.html">📷 Scanner QR Code</a>
+        <a href="stats.html" style="color: var(--brand) !important;">📊 Statistiques</a>
+        <a href="tirage.html">🎰 Tirage au sort</a>
+        <div style="margin-top: auto; margin-bottom: 20px;">
+            <a href="#" onclick="logout()" style="border-top: 1px solid var(--glass-border); border-bottom: none; font-size: 14px; margin-top: 20px; color: #ff4d4d !important;">🚪 Déconnexion</a>
+        </div>
     </div>
 
     <div class="page-content">
@@ -194,10 +206,15 @@
         const token = sessionStorage.getItem('centurioStatsToken');
         if (!token) window.location.href = "index.html"; 
 
+        // 🚨 GESTION DU MENU ADMIN+
+        if (sessionStorage.getItem('centurioAdminRole') === 'admin+') {
+            document.getElementById('admin-menu-btn').style.display = 'block';
+        }
+        function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('menu-overlay').classList.toggle('open'); }
+        function logout() { sessionStorage.clear(); window.location.href = "index.html"; }
+
         let allStatsData = {}; 
         let currentTarget = "visiteurs"; 
-
-        function logout() { sessionStorage.removeItem('centurioStatsToken'); window.location.href = "index.html"; }
 
         // =========================================================
         // 🌓 GESTION DU THEME SYNCHRONISÉ AVEC LE RESTE DU SITE
