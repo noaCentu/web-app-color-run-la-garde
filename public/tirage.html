@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tirage au Sort - Color Run</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=74">
+    <link rel="stylesheet" href="style.css?v=75">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body { 
@@ -15,7 +15,6 @@
         
         .header-v2 { position: absolute; top:0; width:100%; z-index: 1000; background: rgba(10, 0, 26, 0.8) !important; backdrop-filter: blur(10px); border-bottom: 2px solid var(--brand); }
 
-        /* --- LA SCÈNE ET LE SOCLE --- */
         .main-container {
             display: flex; flex-direction: column; align-items: center;
             margin-top: 60px;
@@ -23,7 +22,6 @@
             position: relative;
         }
 
-        /* Halo lumineux derrière la roue */
         .wheel-glow {
             position: absolute;
             top: 50%; left: 50%;
@@ -42,10 +40,11 @@
             width: 420px; height: 420px;
             margin: 0 auto;
             z-index: 10;
-            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* 🚨 ZOOM PROLONGÉ : 4 secondes de transition douce */
+            transition: transform 4s cubic-bezier(0.45, 0.05, 0.55, 0.95);
             transform-origin: center center;
         }
-        .wheel-wrapper.zoomed { transform: scale(1.3) translateY(20px); z-index: 500; }
+        .wheel-wrapper.zoomed { transform: scale(1.4) translateY(20px); z-index: 500; }
 
         .pointer {
             position: absolute;
@@ -65,11 +64,12 @@
         .wheel {
             width: 100%; height: 100%;
             border-radius: 50%;
-            border: 12px solid #222; /* Contour sombre façon pneu/métal */
+            border: 12px solid #222;
             box-shadow: 0 0 0 6px var(--uv-blue), 0 20px 40px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.7);
             position: relative;
             overflow: hidden;
-            transition: transform 7s cubic-bezier(0.15, 0.85, 0.15, 1);
+            /* 🚨 RALENTISSEMENT PROLONGÉ : 10 secondes avec une courbe de freinage très longue (bezier modifié) */
+            transition: transform 10s cubic-bezier(0.1, 0.8, 0.1, 1);
         }
 
         .wheel-center {
@@ -112,7 +112,6 @@
             z-index: 10;
         }
 
-        /* Le Socle de la roue */
         .wheel-stand-pillar {
             width: 80px; height: 60px;
             background: linear-gradient(to right, #222, #444, #222);
@@ -131,7 +130,6 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.9), 0 0 20px rgba(255,0,127,0.3);
         }
 
-        /* --- BOUTON ARCADE --- */
         .btn-arcade {
             background: linear-gradient(to bottom, var(--success), #22990b);
             color: #000; font-size: 28px;
@@ -144,7 +142,6 @@
         .btn-arcade:hover { filter: brightness(1.2); box-shadow: 0 10px 0 #155d07, 0 15px 30px rgba(0,0,0,0.8), 0 0 60px rgba(57, 255, 20, 0.8); transform: translateY(-2px); }
         .btn-arcade:active { transform: translateY(8px); box-shadow: 0 2px 0 #155d07, 0 5px 10px rgba(0,0,0,0.8), 0 0 20px rgba(57, 255, 20, 0.6); }
 
-        /* --- LE TICKET D'OR (Bannière Gagnant) --- */
         .winner-banner {
             display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: linear-gradient(135deg, #150030 0%, #0a001a 100%);
@@ -186,27 +183,21 @@
     </div>
 
     <div class="main-container">
-        
         <div class="wheel-glow" id="wheel-glow"></div>
-
         <div class="wheel-wrapper" id="wheel-wrapper">
             <div class="pointer" id="wheel-pointer"></div>
-            <div class="wheel" id="wheel">
-                </div>
+            <div class="wheel" id="wheel"></div>
             <div class="wheel-center"></div>
         </div>
         <div class="wheel-stand-pillar"></div>
         <div class="wheel-stand-base"></div>
-
         <button class="btn-arcade" id="btn-action" onclick="lancerRoulette()">LANCER LA ROUE</button>
         <p id="empty-msg">🚨 Aucun participant inscrit pour le moment !</p>
-
         <div class="winner-banner" id="winner-banner">
             <h3>Le grand gagnant est</h3>
             <h1 id="winner-name-display">NOM</h1>
             <button class="btn-group-select" style="margin-top: 30px; font-size: 18px; padding: 15px;" onclick="window.location.reload()">🔄 Refaire un tirage</button>
         </div>
-
     </div>
 
     <script>
@@ -219,10 +210,8 @@
         function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('menu-overlay').classList.toggle('open'); }
         function logout() { sessionStorage.clear(); window.location.href = "index.html"; }
 
-        // Palette de couleurs Fluo très saturées pour que ça flashe
         const sliceColors = ['#FF0055', '#00DDFF', '#FFDD00', '#39FF14', '#9D00FF', '#FF6600'];
         
-        // Initialisation de la roue vide pour faire joli avant le clic
         const initWheel = document.getElementById('wheel');
         let initGradients = [];
         for(let i=0; i<16; i++) {
@@ -233,7 +222,7 @@
         for(let i=0; i<16; i++) {
             let peg = document.createElement('div');
             peg.className = 'peg';
-            peg.style.transform = `rotate(${i * (360 / 16)}deg) translateX(195px)`; // Ajusté pour le nouveau diamètre
+            peg.style.transform = `rotate(${i * (360 / 16)}deg) translateX(195px)`;
             initWheel.appendChild(peg);
         }
 
@@ -255,17 +244,14 @@
                     return;
                 }
 
-                // 1. Construction de la Roue de 16 cases
                 const N = 16; 
                 let participants = [];
                 for(let i = 0; i < N - 1; i++) participants.push(data.fauxNoms[i % data.fauxNoms.length]);
-                
                 const winnerFullName = `${data.winner.prenom} ${data.winner.nom.charAt(0).toUpperCase()}.`;
                 participants.push(winnerFullName);
                 participants = participants.sort(() => 0.5 - Math.random()); 
                 const winnerIndex = participants.indexOf(winnerFullName);
 
-                // Application du design de la roue remplie
                 let gradientParts = [];
                 for(let i = 0; i < N; i++) {
                     let startAngle = i * (360 / N); let endAngle = (i + 1) * (360 / N);
@@ -281,44 +267,43 @@
                     textSpan.style.transform = `rotate(${textAngle}deg)`;
                     textSpan.innerText = participants[i].length > 12 ? participants[i].substring(0, 10) + '...' : participants[i];
                     wheel.appendChild(textSpan);
-
                     let peg = document.createElement('div');
                     peg.className = 'peg';
                     peg.style.transform = `rotate(${i * (360 / N)}deg) translateX(195px)`;
                     wheel.appendChild(peg);
                 }
 
-                // 2. Calcul Mathématique
+                // 🚨 CALCUL POUR 10 SECONDES (10 tours)
                 const anglePerSlice = 360 / N;
                 const targetAngle = winnerIndex * anglePerSlice + (anglePerSlice / 2);
-                const totalRotation = (360 * 15) - 90 - targetAngle; // 15 tours complets pour plus de suspense !
+                const totalRotation = (360 * 10) - 90 - targetAngle;
 
                 void wheel.offsetWidth; 
 
-                // 3. Animation
                 wheel.style.transform = `rotate(${totalRotation}deg)`;
                 pointer.classList.add('ticking'); 
-                document.getElementById('wheel-glow').style.animationDuration = "0.5s"; // Le glow pulse super vite !
+                document.getElementById('wheel-glow').style.animationDuration = "0.4s";
 
-                // 4. Révélation (Après 7 secondes)
+                // 🚨 DÉCLENCHEMENT DU ZOOM À LA 6ème SECONDE (pendant le ralentissement)
+                setTimeout(() => {
+                    document.getElementById('wheel-wrapper').classList.add('zoomed');
+                }, 6000);
+
+                // 🚨 RÉVÉLATION À LA 10ème SECONDE
                 setTimeout(() => {
                     pointer.classList.remove('ticking'); 
-                    document.getElementById('wheel-glow').style.animationDuration = "3s"; // Retour au calme
+                    document.getElementById('wheel-glow').style.animationDuration = "3s";
                     
-                    document.getElementById('wheel-wrapper').classList.add('zoomed');
-
                     setTimeout(() => {
                         document.getElementById('winner-name-display').innerText = winnerFullName;
                         document.getElementById('winner-banner').style.display = 'block';
 
-                        // ÉNORME EXPLOSION DE CONFETTIS
                         const fluoColors = ['#FF007F', '#39FF14', '#00FFFF', '#FFFF00', '#FF00FF'];
                         confetti({ particleCount: 1500, spread: 360, startVelocity: 90, scalar: 1.5, colors: fluoColors, zIndex: 9999 });
                         setTimeout(() => confetti({ particleCount: 800, spread: 360, startVelocity: 70, colors: fluoColors, zIndex: 9999 }), 800);
-
-                    }, 1000); // Temps de laisser la roue zoomer
+                    }, 500); 
                     
-                }, 7000); 
+                }, 10000); 
             });
         }
     </script>
