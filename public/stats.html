@@ -11,7 +11,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        /* 🎨 LA PALETTE DYNAMIQUE (Synchronisée avec les autres pages) */
         :root {
             --bg-body: #291834;
             --text-main: #ffffff;
@@ -43,20 +42,16 @@
         h2, h3, h4 { color: var(--text-main) !important; text-shadow: none !important; }
         p { color: var(--text-muted) !important; }
 
-        /* 🚨 BARRE TOUJOURS SOMBRE 🚨 */
         .header-v2 { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 15px; }
         body.light-mode .header-v2 { background-color: #291834; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .header-title { color: #ffffff !important; font-weight: 800; font-size: 20px; text-align: center; flex: 1; }
         .header-title span { color: var(--brand, #f8aa37); }
 
-        /* CONTENEUR PRINCIPAL */
         .page-content { width: 90%; max-width: 700px; margin: 0 auto 20px; padding: 35px 25px; background: var(--glass-bg); backdrop-filter: blur(12px); border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 1px solid var(--glass-border); transition: 0.3s; position: relative; z-index: 1; }
 
-        /* SÉLECTEUR DE DATE */
         .filter-box { text-align: center; margin-bottom: 20px; }
         select { width: 100%; max-width: 300px; padding: 10px; border-radius: 8px; border: 2px solid var(--border-line); background: var(--input-bg); color: var(--text-main); font-family: inherit; font-weight: bold; outline: none; }
 
-        /* GRILLES ET CARTES */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
         .stat-box { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px; text-align: center; }
         .stat-box h4 { margin: 0 0 10px 0; font-size: 13px; color: var(--text-muted) !important; }
@@ -67,7 +62,6 @@
         .comment-item { display: flex; justify-content: space-between; align-items: center; }
         .comment-count { background: var(--brand, #f8aa37); color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; }
 
-        /* BARRES DE DISTRIBUTION */
         .dist-row { display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; }
         .dist-label { width: 40px; color: var(--text-main); }
         .dist-bar-bg { flex-grow: 1; background: var(--input-bg); height: 10px; border-radius: 5px; margin: 0 10px; overflow: hidden; }
@@ -75,12 +69,10 @@
         .dist-val { width: 30px; text-align: right; color: var(--text-muted); }
         .avg-box { margin-top: 10px; text-align: right; font-size: 14px; font-weight: 600; color: var(--text-main); }
 
-        /* ONGLETS */
         .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border-line); padding-bottom: 10px; }
         .tab-btn { background: transparent; border: none; color: var(--text-muted); font-size: 14px; font-weight: bold; cursor: pointer; padding: 5px 10px; transition: 0.3s; }
         .tab-btn.active { color: var(--brand, #f8aa37); border-bottom: 3px solid var(--brand, #f8aa37); }
 
-        /* BOUTONS ACTIONS */
         .btn-pdf, .btn-csv, .btn-reset, .btn-cancel { width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; margin-bottom: 10px; font-family: inherit; transition: 0.2s; }
         .btn-pdf { background: #4CAF50; color: white; }
         .btn-csv { background: #2196F3; color: white; }
@@ -91,9 +83,6 @@
 
         #night-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 25px; border: none; background: var(--brand, #f8aa37); color: white; font-size: 24px; cursor: pointer; z-index: 3000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        /* =========================================================
-           🖨️ LE MODE IMPRESSION NATIF (Pour un PDF Parfait)
-           ========================================================= */
         @media print {
             .header-v2, .filter-box, .tabs, .btn-pdf, .btn-csv, .btn-reset, .btn-cancel, #night-btn, .fullscreen-bg, #admin-menu-btn, .menu-overlay, .side-menu { display: none !important; }
             html, body { background: white !important; background-color: white !important; margin: 0 !important; padding: 0 !important; color: black !important; }
@@ -171,7 +160,7 @@
             <h3 style="margin-top: 15px; margin-bottom: 15px;" id="survey-section-title">📊 Résultats du questionnaire (Visiteurs)</h3>
 
             <div class="question-block">
-                <div class="question-title" id="title-q1">Q1. Comment évaluez-vous l'ambiance de la Gaming Zone ?</div>
+                <div class="question-title" id="title-q1">Q1. Comment évaluez-vous l'ambiance de l'espace gaming de la Color Run ?</div>
                 <div id="dist-q1"></div>
                 <div class="avg-box">Moyenne : <span class="avg-number" id="avg-q1">0.0</span> / 5 <span class="vote-count" id="count-q1" style="font-weight:normal; font-size:12px;">(0 avis)</span></div>
             </div>
@@ -189,7 +178,7 @@
             </div>
 
             <div class="stat-section" id="comments-results">
-                <h3 style="margin-bottom: 15px; margin-top: 20px;">💡 Idées & Suggestions</h3>
+                <h3 style="margin-bottom: 15px; margin-top: 20px;">💡 Retours et Suggestions</h3>
                 <div id="comments-list"></div>
             </div>
         </div>
@@ -206,7 +195,6 @@
         const token = sessionStorage.getItem('centurioStatsToken');
         if (!token) window.location.href = "index.html"; 
 
-        // 🚨 GESTION DU MENU ADMIN+
         if (sessionStorage.getItem('centurioAdminRole') === 'admin+') {
             document.getElementById('admin-menu-btn').style.display = 'block';
         }
@@ -216,9 +204,15 @@
         let allStatsData = {}; 
         let currentTarget = "visiteurs"; 
 
-        // =========================================================
-        // 🌓 GESTION DU THEME SYNCHRONISÉ AVEC LE RESTE DU SITE
-        // =========================================================
+        // Correspondance des jeux pour un affichage propre
+        const gameNamesMap = {
+            's1': 'Beat Saber (VR)',
+            's2': 'Mur Interactif',
+            's3': 'Just Dance',
+            's4': 'Mario Kart World',
+            's5': 'Switch Sport'
+        };
+
         function toggleNightMode() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
@@ -266,7 +260,7 @@
             
             if (target === 'visiteurs') {
                 document.getElementById('survey-section-title').innerText = "📊 Résultats du questionnaire (Visiteurs)";
-                document.getElementById('title-q1').innerText = "Q1. Comment évaluez-vous l'ambiance de la Gaming Zone ?";
+                document.getElementById('title-q1').innerText = "Q1. Comment évaluez-vous l'ambiance de l'espace gaming de la Color Run ?";
                 document.getElementById('title-q2').innerText = "Q2. L'application mobile était-elle facile à utiliser ?";
                 document.getElementById('title-q3').innerText = "Q3. Globalement, quelle est votre satisfaction ?";
             } else {
@@ -299,7 +293,8 @@
             if (gamesArray.length > 0) {
                 gamesListDiv.innerHTML = "";
                 gamesArray.forEach(g => {
-                    gamesListDiv.innerHTML += `<div class="comment-item"><span style="color: var(--brand, #f8aa37); font-weight: bold; text-transform: uppercase;">DÉFI : ${g.id}</span><span class="comment-count">${g.count} validations</span></div>`;
+                    let realName = gameNamesMap[g.id] || g.id;
+                    gamesListDiv.innerHTML += `<div class="comment-item"><span style="color: var(--brand, #f8aa37); font-weight: bold; text-transform: uppercase;">DÉFI : ${realName}</span><span class="comment-count">${g.count} validations</span></div>`;
                 });
             } else {
                 gamesListDiv.innerHTML = "<p style='font-size: 13px; text-align: center;'>Aucun défi n'a encore été validé.</p>";
@@ -330,17 +325,11 @@
             }
         }
 
-        // =========================================================
-        // 🖨️ MÉTHODE NATIVE : LE NAVIGATEUR GÈRE L'IMPRESSION/PDF
-        // =========================================================
         function downloadPDF() {
             alert("La fenêtre d'impression va s'ouvrir.\n\n👉 Choisissez 'Enregistrer au format PDF' comme destination pour avoir votre fichier.");
             window.print();
         }
 
-        // =========================================================
-        // 🚀 TÉLÉCHARGEMENT VRAI EXCEL (.XLSX) AVEC SHEETJS
-        // =========================================================
         function downloadExcel() {
             const selector = document.getElementById('day-selector');
             const dayKey = selector.value;
@@ -368,7 +357,10 @@
             if (gamesArray.length === 0) {
                 excelData.push(["Aucun stand validé", 0]);
             } else {
-                gamesArray.forEach(g => excelData.push([g.id.toUpperCase(), g.count]));
+                gamesArray.forEach(g => {
+                    let realName = gameNamesMap[g.id] || g.id;
+                    excelData.push([realName.toUpperCase(), g.count]);
+                });
             }
             excelData.push([]);
 
@@ -376,7 +368,7 @@
             const scoresVis = s.surveyScores || {q1:{}, q2:{}, q3:{}};
             excelData.push([`--- AVIS VISITEURS (${respVis} formulaires) ---`]);
             excelData.push(["Question", "Moyenne sur 5"]);
-            excelData.push(["Ambiance de la Gaming Zone", Number(calcAvg(scoresVis.q1))]);
+            excelData.push(["Ambiance de l'espace gaming", Number(calcAvg(scoresVis.q1))]);
             excelData.push(["Facilité de l'application", Number(calcAvg(scoresVis.q2))]);
             excelData.push(["Satisfaction Globale", Number(calcAvg(scoresVis.q3))]);
             excelData.push([]);
