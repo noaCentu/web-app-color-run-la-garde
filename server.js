@@ -11,11 +11,12 @@ const io = new Server(server);
 // --- 🔒 PARAMÈTRES DE SÉCURITÉ ---
 const MOT_DE_PASSE_MATIN = "admincenturio25"; 
 const MOT_DE_PASSE_STATS = "stat2026"; 
-const MOT_DE_PASSE_RESET = "resetparty13"; // 👈 LE NOUVEAU MOT DE PASSE ICI
+const MOT_DE_PASSE_RESET = "resetparty13"; 
 const ADMIN_TOKEN = "jeton_secret_incassable_2024_xyz"; 
 const STATS_TOKEN = "jeton_secret_stats_2026_abc"; 
 
-const MONGO_URI = "mongodb+srv://CenturioAdmin:CenturioAdmin@cluster0.xdadatq.mongodb.net/centurioDB?retryWrites=true&w=majority";
+// 🚨 MODIFICATION ICI : centurioDB est devenu colorRunDB pour isoler les stats !
+const MONGO_URI = "mongodb+srv://CenturioAdmin:CenturioAdmin@cluster0.xdadatq.mongodb.net/colorRunDB?retryWrites=true&w=majority";
 
 function getTodayDate() {
     return new Date().toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' });
@@ -61,7 +62,7 @@ async function initStats(key) {
 
 mongoose.connect(MONGO_URI)
     .then(() => {
-        console.log("🟢 Connecté avec succès au coffre-fort MongoDB !");
+        console.log("🟢 Connecté avec succès au coffre-fort MongoDB (Color Run) !");
         initStats("main");
     })
     .catch(err => console.error("🔴 Erreur de connexion MongoDB :", err));
@@ -110,6 +111,7 @@ io.on('connection', async (socket) => {
     socket.on('disconnect', () => currentConnections-- );
 });
 
+// --- 🔐 ROUTES D'AUTHENTIFICATION ---
 app.post('/api/login', async (req, res) => {
     const { password } = req.body;
     if (password === MOT_DE_PASSE_MATIN) res.json({ success: true, token: ADMIN_TOKEN, role: 'admin' });
@@ -117,7 +119,6 @@ app.post('/api/login', async (req, res) => {
     else res.json({ success: false });
 });
 
-// --- 🔐 NOUVELLE ROUTE : VERIFICATION DU RESET ---
 app.post('/api/verify_reset', (req, res) => {
     const { password } = req.body;
     if (password === MOT_DE_PASSE_RESET) {
@@ -126,8 +127,8 @@ app.post('/api/verify_reset', (req, res) => {
         res.json({ success: false });
     }
 });
-// --------------------------------------------------
 
+// --- 🎮 ROUTES DE JEU ET VALIDATION ---
 app.get('/api/my-progress/:userId', async (req, res) => {
     try {
         const player = await Player.findOne({ userId: req.params.userId });
@@ -153,7 +154,9 @@ app.post('/api/validate', async (req, res) => {
         }
 
         if (player.games.includes(gameId)) return res.json({ success: false, message: "⚠️ DÉJÀ validé !" });
-        if (player.games.length >= 8) return res.json({ success: false, message: "🛑 Cadeau déjà récupéré !" });
+        
+        // 🚨 MODIFICATION ICI : Limite adaptée à 5 jeux (au lieu de 8)
+        if (player.games.length >= 5) return res.json({ success: false, message: "🛑 Maximum de défis atteint !" });
 
         player.games.push(gameId);
         await player.save();
@@ -166,13 +169,15 @@ app.post('/api/validate', async (req, res) => {
             await stats.save();
         }
 
-        if (player.games.length === 8) await GlobalStat.updateOne({ idName: "main" }, { $inc: { totalGagnants: 1 } });
+        // 🚨 MODIFICATION ICI : On valide un "gagnant" quand il atteint 5 jeux
+        if (player.games.length === 5) await GlobalStat.updateOne({ idName: "main" }, { $inc: { totalGagnants: 1 } });
         
         io.to(userId).emit('challenge_validated', gameId);
         res.json({ success: true });
     } catch(e) { res.json({ success: false, message: "Erreur serveur" }); }
 });
 
+// --- 📝 ROUTES QUESTIONNAIRES ---
 app.post('/api/survey', async (req, res) => {
     const { q1, q2, q3, comment, userId } = req.body;
     if(!q1 || !q2 || !q3) return res.json({ success: false });
@@ -220,6 +225,7 @@ app.post('/api/admin_survey', async (req, res) => {
     } catch(e) { res.json({ success: false }); }
 });
 
+// --- 📊 ROUTES STATISTIQUES ---
 app.post('/api/stats_data', async (req, res) => {
     if (req.body.token === STATS_TOKEN) {
         try {
