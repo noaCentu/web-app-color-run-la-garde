@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scanner Staff Color Run</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=70">
+    <link rel="stylesheet" href="style.css?v=60">
     <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
@@ -26,12 +26,12 @@
 
     <div class="page-content" style="margin-top: 20px;">
         <h2 style="margin-bottom: 5px;">Validation Rapide</h2>
-        <p style="font-size: 13px; margin-bottom: 20px;">Pointez vers le QR Code du joueur.</p>
+        <p style="font-size: 13px; margin-bottom: 20px;">Pointez vers le QR Code.</p>
         
         <div id="reader"></div>
         <div id="scan-result" style="margin-top: 20px; font-weight: 800; font-size: 18px; padding: 20px; border-radius: 15px; display: none;"></div>
 
-        <button id="btn-open-survey" class="btn-group-select" style="margin-top: 30px; background:var(--uv-blue); color:black;" onclick="document.getElementById('admin-survey').style.display='flex'">📝 Avis Animateur</button>
+        <button id="btn-open-survey" class="btn-group-select" style="margin-top: 30px; background:var(--uv-blue); color:black;" onclick="document.getElementById('admin-survey').style.display='flex'">📝 Donner mon avis sur l'application</button>
         <button class="btn-outline" onclick="logout()" style="margin-top: 20px;">Se déconnecter</button>
     </div>
 
@@ -39,14 +39,14 @@
         <div class="modal fade-in">
             <h3 style="margin-bottom: 15px; text-align: center; color: var(--brand);">Feedback Animateurs</h3>
             <div class="survey-scale" id="sq1" style="flex-direction:column; align-items:center;">
-                <p style="font-size:12px;">Facilité du scanner ?</p>
+                <p style="font-size:12px;">1. Facilité d'utilisation du scanner ?</p>
                 <div style="display:flex; gap:5px;"><span onclick="rate('sq1', 1)">★</span><span onclick="rate('sq1', 2)">★</span><span onclick="rate('sq1', 3)">★</span><span onclick="rate('sq1', 4)">★</span><span onclick="rate('sq1', 5)">★</span></div>
             </div>
             <div class="survey-scale" id="sq2" style="flex-direction:column; align-items:center;">
-                <p style="font-size:12px;">Rapidité de l'app ?</p>
+                <p style="font-size:12px;">2. Stabilité et rapidité de l'application ?</p>
                 <div style="display:flex; gap:5px;"><span onclick="rate('sq2', 1)">★</span><span onclick="rate('sq2', 2)">★</span><span onclick="rate('sq2', 3)">★</span><span onclick="rate('sq2', 4)">★</span><span onclick="rate('sq2', 5)">★</span></div>
             </div>
-            <button class="btn-group-select" onclick="submitAdminSurvey()">Envoyer</button>
+            <button class="btn-group-select" onclick="submitAdminSurvey()">Envoyer mon avis</button>
             <button class="btn-outline" onclick="document.getElementById('admin-survey').style.display='none'">Fermer</button>
         </div>
     </div>
@@ -55,7 +55,7 @@
         const token = sessionStorage.getItem('centurioAdminToken');
         if (!token) window.location.href = "index.html"; 
 
-        // Si c'est le BIG BOSS (admin+), on affiche le menu caché !
+        // Si c'est l'Admin+, on affiche le menu caché !
         if (sessionStorage.getItem('centurioAdminRole') === 'admin+') {
             document.getElementById('admin-menu-btn').style.display = 'block';
         }
@@ -102,7 +102,7 @@
         Html5Qrcode.getCameras().then(devices => {
             if (devices && devices.length > 0) {
                 html5QrCode.start({ facingMode: "environment" }, cameraConfig, onScanSuccess, () => {}).catch(() => {
-                    html5QrCode.start(devices[0].id, cameraConfig, onScanSuccess, () => {}).catch(err => alert("🚨 Échec caméra."));
+                    html5QrCode.start(devices[0].id, cameraConfig, onScanSuccess, () => {}).catch(err => alert("🚨 Échec : Autorisez la caméra."));
                 });
             }
         });
