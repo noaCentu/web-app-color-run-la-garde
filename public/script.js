@@ -10,17 +10,9 @@ function firePowder() {
     if (typeof confetti !== 'undefined') {
         const fluoColors = ['#FF007F', '#39FF14', '#00FFFF', '#FFFF00', '#FF00FF'];
         confetti({
-            particleCount: 400, 
-            startVelocity: 45, 
-            spread: 360, 
-            ticks: 120,
-            gravity: 0.6, 
-            scalar: 0.6, 
-            shapes: ['circle'], 
-            colors: fluoColors,
-            origin: { x: 0.5, y: 0.4 }, 
-            disableForReducedMotion: true,
-            zIndex: 9999 // 🚨 C'EST ÇA QUI MANQUAIT : La poudre passe AU-DESSUS du pop-up !
+            particleCount: 400, startVelocity: 45, spread: 360, ticks: 120,
+            gravity: 0.6, scalar: 0.6, shapes: ['circle'], colors: fluoColors,
+            origin: { x: 0.5, y: 0.4 }, disableForReducedMotion: true, zIndex: 9999
         });
     }
 }
@@ -76,7 +68,6 @@ try {
             if (typeof closeModal === 'function') closeModal();
             if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
             
-            // On affiche le pop-up ET on tire la poudre par dessus !
             const sModal = document.getElementById('success-modal');
             if(sModal) { sModal.style.display = 'flex'; setTimeout(() => sModal.style.display = 'none', 2500); }
             firePowder();
@@ -129,7 +120,7 @@ window.renderGames = function() {
         list.appendChild(sCard);
         if(drawContainer) drawContainer.innerHTML = '';
     } else {
-        const userName = localStorage.getItem('centurioUserPrenom') || "Joueur";
+        const userName = localStorage.getItem('centurioUserDisplayName') || "Joueur";
         if(count === 5 && drawContainer) {
             drawContainer.innerHTML = `<div class="draw-confirmation" style="margin-top: 25px; padding: 20px; border-radius: 15px; border: 3px solid var(--success); background: rgba(57, 255, 20, 0.1); color: var(--success); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px var(--success); animation: pulse-success 2s infinite ease-in-out;">${userName}, ton inscription est confirmée ✅</div>`;
         }
@@ -201,12 +192,15 @@ window.submitSurvey = function() {
         body: JSON.stringify({ q1: window.answers.q1, q2: window.answers.q2, q3: window.answers.q3, comment: comm, userId: userId, nom: nom, prenom: prenom })
     }).then(() => {
         localStorage.setItem('centurioSurveyDone', 'true');
-        localStorage.setItem('centurioUserPrenom', prenom);
+        
+        // C'est ici que ça se passe : Format "Mathieu F."
+        const displayName = prenom + " " + nom.charAt(0).toUpperCase() + ".";
+        localStorage.setItem('centurioUserDisplayName', displayName);
 
         document.getElementById('survey-modal').style.display = 'none';
         firePowder();
         
-        document.getElementById('winner-name-display').innerText = prenom;
+        document.getElementById('winner-name-display').innerText = displayName;
         if(document.getElementById('final-modal')) document.getElementById('final-modal').style.display = 'flex';
         
         renderGames();
