@@ -194,7 +194,7 @@ window.submitSurvey = function() {
         localStorage.setItem('centurioSurveyDone', 'true');
         
         // C'est ici que ça se passe : Format "Mathieu F."
-        const displayName = prenom + " " + nom.charAt(0).toUpperCase() + ".";
+        const displayName = prenom + " " + nom.charAt(0).toUpperCase() ;
         localStorage.setItem('centurioUserDisplayName', displayName);
 
         document.getElementById('survey-modal').style.display = 'none';
