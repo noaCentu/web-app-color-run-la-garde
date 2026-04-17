@@ -8,10 +8,9 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// --- 🔒 PARAMÈTRES DE SÉCURITÉ MODIFIÉS ---
+// --- 🔒 PARAMÈTRES DE SÉCURITÉ ---
 const MOT_DE_PASSE_MATIN = "admin";  
 const MOT_DE_PASSE_STATS = "admin+"; 
-const MOT_DE_PASSE_RESET = "resetparty13"; 
 const ADMIN_TOKEN = "jeton_secret_incassable_2024_xyz"; 
 const STATS_TOKEN = "jeton_secret_stats_2026_abc"; 
 
@@ -36,7 +35,6 @@ const StatsSchema = new mongoose.Schema({
     totalVisiteurs: { type: Number, default: 0 },
     maxConcurrentUsers: { type: Number, default: 0 }, 
     totalGagnants: { type: Number, default: 0 },
-    totalAdmins: { type: Number, default: 0 },
     gameStats: { type: Map, of: Number, default: {} },
     surveyRespondents: { type: Number, default: 0 },
     surveyScores: {
@@ -108,9 +106,9 @@ io.on('connection', async (socket) => {
     socket.on('disconnect', () => currentConnections-- );
 });
 
-// --- 🔐 ROUTES D'AUTHENTIFICATION ---
+// --- 🔐 ROUTES D'AUTHENTIFICATION (MODIFIÉ POUR ENLEVER LES ESPACES) ---
 app.post('/api/login', async (req, res) => {
-    const { password } = req.body;
+    const password = (req.body.password || "").trim(); // .trim() enlève les espaces à la fin !
     if (password === MOT_DE_PASSE_MATIN) res.json({ success: true, token: ADMIN_TOKEN, role: 'admin' });
     else if (password === MOT_DE_PASSE_STATS) res.json({ success: true, token: STATS_TOKEN, role: 'admin+' });
     else res.json({ success: false });
@@ -249,6 +247,15 @@ app.post('/api/stats_data', async (req, res) => {
                 };
             });
             res.json({ success: true, allData: result });
+        } catch(e) { res.json({ success: false }); }
+    } else res.json({ success: false });
+});
+
+app.post('/api/reset_stats', async (req, res) => {
+    if (req.body.token === STATS_TOKEN) {
+        try {
+            await GlobalStat.deleteMany({}); await Player.deleteMany({}); await initStats("main"); 
+            res.json({ success: true });
         } catch(e) { res.json({ success: false }); }
     } else res.json({ success: false });
 });
