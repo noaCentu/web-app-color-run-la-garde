@@ -1,4 +1,4 @@
-console.log("🚀 Script Color Run Night v70 - Inscription avec Nom/Prenom");
+console.log("🚀 Script Color Run Night v71 - Inscription avec Nom/Prenom");
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -36,7 +36,7 @@ window.forceSync = function() {
     syncWithServer();
     setTimeout(() => {
         if(btn) { btn.innerText = "✅ À jour !"; btn.style.opacity = "1";
-            setTimeout(() => { btn.innerText = "🔄 Actualiser"; }, 2000);
+            setTimeout(() => { btn.innerText = "🔄 Actualiser ma page"; }, 2000);
         }
     }, 800);
 };
@@ -118,10 +118,9 @@ window.renderGames = function() {
         list.appendChild(sCard);
         if(drawContainer) drawContainer.innerHTML = '';
     } else {
-        // 🚨 NOUVEAU : Message vert personnalisé !
         const userName = localStorage.getItem('centurioUserPrenom') || "Joueur";
         if(count === 5 && drawContainer) {
-            drawContainer.innerHTML = `<div class="draw-confirmation">${userName}, ton inscription est confirmée ✅</div>`;
+            drawContainer.innerHTML = `<div class="draw-confirmation" style="margin-top: 25px; padding: 20px; border-radius: 15px; border: 3px solid var(--success); background: rgba(57, 255, 20, 0.1); color: var(--success); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px var(--success); animation: pulse-success 2s infinite ease-in-out;">${userName}, ton inscription est confirmée ✅</div>`;
         }
     }
 
@@ -191,7 +190,7 @@ window.submitSurvey = function() {
         body: JSON.stringify({ q1: window.answers.q1, q2: window.answers.q2, q3: window.answers.q3, comment: comm, userId: userId, nom: nom, prenom: prenom })
     }).then(() => {
         localStorage.setItem('centurioSurveyDone', 'true');
-        localStorage.setItem('centurioUserPrenom', prenom); // On sauvegarde le prénom pour l'afficher en bas !
+        localStorage.setItem('centurioUserPrenom', prenom);
 
         document.getElementById('survey-modal').style.display = 'none';
         firePowder();
