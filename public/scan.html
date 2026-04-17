@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scanner Staff Color Run</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=60">
+    <link rel="stylesheet" href="style.css?v=71">
     <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
@@ -13,7 +13,7 @@
 
     <div class="header-v2">
         <div style="width:30px;"></div> <div class="header-title"><span class="notranslate">Scanner</span> <span style="color:white;">Staff</span></div>
-        <div class="hamburger-btn" id="admin-menu-btn" onclick="toggleMenu()" style="display:none; font-size:25px;">☰</div>
+        <div class="hamburger-btn" id="admin-menu-btn" onclick="toggleMenu()" style="display:none; font-size:25px; cursor:pointer;">☰</div>
     </div>
 
     <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
@@ -22,6 +22,9 @@
         <a href="scan.html" style="color: var(--brand) !important;">📷 Scanner QR Code</a>
         <a href="stats.html">📊 Statistiques</a>
         <a href="tirage.html">🎰 Tirage au sort</a>
+        <div style="margin-top: auto; margin-bottom: 20px;">
+            <a href="#" onclick="logout()" style="border-top: 1px solid var(--glass-border); border-bottom: none; font-size: 14px; margin-top: 20px; color: #ff4d4d !important;">🚪 Déconnexion</a>
+        </div>
     </div>
 
     <div class="page-content" style="margin-top: 20px;">
@@ -55,13 +58,15 @@
         const token = sessionStorage.getItem('centurioAdminToken');
         if (!token) window.location.href = "index.html"; 
 
-        // Si c'est l'Admin+, on affiche le menu caché !
+        // Affichage du menu si Admin+
         if (sessionStorage.getItem('centurioAdminRole') === 'admin+') {
             document.getElementById('admin-menu-btn').style.display = 'block';
         }
 
         function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('menu-overlay').classList.toggle('open'); }
+        function logout() { sessionStorage.clear(); window.location.href = "index.html"; }
 
+        // --- Logique du Scanner ---
         const html5QrCode = new Html5Qrcode("reader");
         let isProcessing = false; 
 
@@ -107,8 +112,7 @@
             }
         });
 
-        function logout() { sessionStorage.clear(); window.location.href = "index.html"; }
-
+        // --- Logique Feedback ---
         let scores = { sq1: 0, sq2: 0 };
         function rate(qId, val) {
             scores[qId] = val;
